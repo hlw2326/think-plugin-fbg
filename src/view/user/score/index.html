@@ -1,0 +1,51 @@
+{extend name="table"}
+
+{block name="button"}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='user/score/index_search'}
+    <table id="ScoreTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    var scoreTypes = {:json_encode($types)};
+    $(function () {
+        $('#ScoreTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'id', type: 'desc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'id', title: 'ID', width: 80, align: 'center', sort: true},
+                {field: 'user_id', title: '用户ID', width: 90, align: 'center'},
+                {field: 'avatar_url', title: '头像', width: 70, align: 'center', templet: '<div>{{-$.layTable.showImage(d.avatar_url)}}</div>'},
+                {field: 'nickname', title: '昵称', width: 140},
+                {field: 'source', title: '积分来源', width: 120, align: 'left', templet: '#SourceTpl'},
+                {field: 'value', title: '积分变化值', width: 120, align: 'left', sort: true, templet: '#ValueTpl'},
+                {field: 'before', title: '变更前', width: 100, align: 'center'},
+                {field: 'after', title: '变更后', width: 100, align: 'center'},
+                {field: 'remark', title: '备注说明', width: 300},
+                {field: 'create_at', title: '记录时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+    });
+</script>
+
+<script type="text/html" id="ValueTpl">
+    {{# if (d.value > 0) { }}
+    <span class="color-green" style="font-weight: bold;">+{{d.value}}</span>
+    {{# } else { }}
+    <span class="color-red" style="font-weight: bold;">{{d.value}}</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="SourceTpl">
+    {{ scoreTypes[d.source] || d.source || '其他类型' }}
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs layui-btn-warm" data-confirm="确定回滚该条积分记录吗？回滚将反向操作积分。" data-action="{:url('rollback')}" data-value="id#{{d.id}}">回滚</a>
+</script>
+{/block}

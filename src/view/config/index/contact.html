@@ -1,0 +1,92 @@
+{extend name="main"}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card">
+    {include file='config/index/tabs'}
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+
+            <form action="{:url('contact')}" class="layui-form" data-auto="true" method="post">
+                <div class="layui-card-body">
+
+                    <div class="layui-form-item">
+                        <span class="help-block">{:lang('所有 open-type=contact 的客服按钮共用这组配置。任一字段留空时前端不传，微信走默认行为。')}</span>
+                    </div>
+
+                    <fieldset class="layui-bg-gray">
+                        <legend><b class="layui-badge think-bg-violet">{:lang('消息卡片')}</b></legend>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('显示消息卡片')}</span>
+                            <div class="layui-textarea help-checks">
+                                <label class="think-radio">
+                                    {if $contact.show_message_card eq 1}
+                                    <input type="radio" name="show_message_card" value="1" lay-ignore checked> {:lang('显示')}
+                                    {else}
+                                    <input type="radio" name="show_message_card" value="1" lay-ignore> {:lang('显示')}
+                                    {/if}
+                                </label>
+                                <label class="think-radio">
+                                    {if $contact.show_message_card eq 0}
+                                    <input type="radio" name="show_message_card" value="0" lay-ignore checked> {:lang('隐藏')}
+                                    {else}
+                                    <input type="radio" name="show_message_card" value="0" lay-ignore> {:lang('隐藏')}
+                                    {/if}
+                                </label>
+                            </div>
+                            <p class="help-block"><b>必选</b>，{:lang('控制客服进入会话时是否显示消息卡片。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('消息卡片标题')}</span>
+                            <input class="layui-input" name="send_message_title" maxlength="30"
+                                placeholder="{:lang('如：联系客服')}" value='{$contact.send_message_title|default=""}'>
+                            <p class="help-block"><b>可选</b>，{:lang('用户点客服按钮进入会话时，自动发送的卡片标题。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('消息卡片路径')}</span>
+                            <input class="layui-input" name="send_message_path" maxlength="100"
+                                placeholder="{:lang('如：/pages/index/index；留空使用当前页')}" value='{$contact.send_message_path|default=""}'>
+                            <p class="help-block"><b>可选</b>，{:lang('消息卡片点击后打开的小程序页面路径，建议以 / 开头。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('消息卡片图片')}</span>
+                            <div class="relative block">
+                                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover
+                                    placeholder="{:lang('请从图片空间选择消息卡片缩略图（可选）')}" value='{$contact.send_message_img|default=""}' name="send_message_img">
+                                <a class="input-right-icon layui-icon layui-icon-upload-drag" data-file="image"
+                                    data-type="png,jpg,jpeg" data-field="send_message_img"></a>
+                            </div>
+                            <p class="help-block"><b>可选</b>，{:lang('推荐 5:4 比例；留空时微信使用默认小程序 Logo。')}</p>
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="layui-bg-gray">
+                        <legend><b class="layui-badge think-bg-blue">{:lang('公众号')}</b></legend>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('公众号二维码')}</span>
+                            <div class="relative block">
+                                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover
+                                    placeholder="{:lang('请上传公众号二维码；留空时小程序不显示关注公众号菜单')}" value='{$contact.official_qrcode|default=""}' name="official_qrcode">
+                                <a class="input-right-icon layui-icon layui-icon-upload-drag" data-file="image"
+                                    data-type="png,jpg,jpeg" data-field="official_qrcode"></a>
+                            </div>
+                            <p class="help-block"><b>可选</b>，{:lang('用于用户中心关注公众号弹窗，建议使用清晰的正方形二维码图片。')}</p>
+                        </label>
+                    </fieldset>
+
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="layui-form-item text-center">
+                    <button class="layui-btn" type="submit">{:lang('保存客服配置')}</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{/block}
+

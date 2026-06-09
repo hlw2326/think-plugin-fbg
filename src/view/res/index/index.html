@@ -1,0 +1,87 @@
+{extend name="table"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-modal='{:url("add")}' data-title="添加资源" class="layui-btn layui-btn-sm layui-btn-primary">添加资源</button>
+<!--{/if}-->
+<!--{if auth("remove")}-->
+<a data-confirm="确定要删除这些资源吗？" data-table-id="ResTable" data-action='{:url("remove")}' data-rule="id#{id}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</a>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='res/index/index_search'}
+    <table id="ResTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    var cateMap = {};
+    {foreach $cates as $cate}
+    cateMap['{$cate.id}'] = '{$cate.name}';
+    {/foreach}
+
+    $(function () {
+        $('#ResTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'sort desc,id', type: 'asc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'id', title: 'ID', width: 70, align: 'center', sort: true},
+                {field: 'sort', title: '排序', width: 100, align: 'center', sort: true, templet: '#SortInputTpl'},
+                {field: 'url', title: '预览', width: 80, align: 'center', templet: function(d) {
+                    return '<div>' + $.layTable.showImage(d.url) + '</div>';
+                }},
+                {field: 'title', title: '资源标题', width: 200},
+                {field: 'cate_id', title: '所属分类', width: 130, templet: function(d) {
+                    return cateMap[d.cate_id] || '<span class="color-desc">未知分类</span>';
+                }},
+                {field: 'ext', title: '资源类型', width: 100, align: 'center', templet: function(d) {
+                    return d.ext === 'video' ? '<span class="layui-badge layui-bg-blue">视频</span>' : '<span class="layui-badge layui-bg-green">图片</span>';
+                }},
+                {field: 'resolution', title: '分辨率', width: 110, align: 'center'},
+                {field: 'size', title: '大小', width: 100, align: 'center'},
+                {field: 'tags', title: '检索标签', minWidth: 150},
+                {field: 'view_count', title: '浏览', width: 90, align: 'center', sort: true, templet: '<div>{{d.view_count || 0}}</div>'},
+                {field: 'like_count', title: '点赞', width: 90, align: 'center', sort: true, templet: '<div>{{d.like_count || 0}}</div>'},
+                {field: 'collect_count', title: '收藏', width: 90, align: 'center', sort: true, templet: '<div>{{d.collect_count || 0}}</div>'},
+                {field: 'down_count', title: '下载', width: 90, align: 'center', sort: true, templet: '<div>{{d.down_count || 0}}</div>'},
+                {field: 'status', title: '状态', width: 120, align: 'center', templet: '#StatusSwitchTpl'},
+                {field: 'create_at', title: '创建时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+
+        layui.form.on('switch(StatusSwitch)', function (obj) {
+            var data = {id: obj.value, status: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('state')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#ResTable').trigger('reload');
+                }); else $('#ResTable').trigger('reload');
+                return false;
+            }, false);
+        });
+    });
+</script>
+
+<script type="text/html" id="SortInputTpl">
+    <input type="number" min="0" data-blur-number="0" data-action-blur="{:sysuri()}" data-value="id#{{d.id}};action#sort;sort#{value}" data-loading="false" value="{{d.sort}}" class="layui-input text-center">
+</script>
+
+<script type="text/html" id="StatusSwitchTpl">
+    <!--{if auth("state")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="已启用|已禁用" lay-filter="StatusSwitch" {{-d.status>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.status ? '<b class="color-green">已启用</b>' : '<b class="color-red">已禁用</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="toolbar">
+    <!--{if auth("edit")}-->
+    <a class="layui-btn layui-btn-sm" data-modal='{:url("edit")}?id={{d.id}}' data-title="编辑资源">编辑</a>
+    <!--{/if}-->
+    <!--{if auth("remove")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该资源吗？" data-action="{:url('remove')}" data-value="id#{{d.id}}">删除</a>
+    <!--{/if}-->
+</script>
+{/block}

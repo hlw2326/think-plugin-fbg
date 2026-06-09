@@ -1,0 +1,229 @@
+{extend name="main"}
+
+{block name="content"}
+<style>
+    .ai-model-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        max-width: none;
+    }
+
+    .ai-model-input {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .ai-model-control .layui-btn {
+        flex: 0 0 auto;
+    }
+
+    .ai-model-row {
+        max-width: 980px;
+    }
+
+    .ai-model-row .layui-form-item {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+        .ai-model-row .layui-form-item {
+            margin-bottom: 15px;
+        }
+
+        .ai-model-control {
+            display: block;
+            max-width: none;
+        }
+
+        .ai-model-control .layui-btn {
+            width: 100%;
+            margin-top: 8px;
+        }
+    }
+</style>
+
+<div class="layui-tab layui-tab-card">
+    {include file='config/index/tabs'}
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <form action="{:sysuri()}" class="layui-form" data-auto="true" method="post">
+                <div class="layui-card-body">
+
+                    <fieldset class="layui-bg-gray">
+                        <legend><b class="layui-badge think-bg-violet">{:lang('AI模型配置')}</b></legend>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('启用AI')}</span>
+                            <select name="enabled" class="layui-select">
+                                <option value="1" {if !empty($ai.enabled)}selected{/if}>{:lang('启用')}</option>
+                                <option value="0" {if empty($ai.enabled)}selected{/if}>{:lang('关闭')}</option>
+                            </select>
+                            <p class="help-block"><b>必选</b>，{:lang('启用后，后续可在小程序及后台调用大模型生成AI建议。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('模型供应商')}</span>
+                            <select name="provider" class="layui-select" lay-filter="provider">
+                                {foreach $providers as $code => $provider}
+                                <option value="{$code}" {if $ai.provider eq $code}selected{/if}>{$provider.label}</option>
+                                {/foreach}
+                            </select>
+                            <p class="help-block" id="ProviderNote">{$ai.note|default=''}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">API Key</span>
+                            <input name="api_key" type="password" autocomplete="new-password" class="layui-input"
+                                placeholder="{if !empty($ai.api_key_mask)}{:lang('已配置：')}{$ai.api_key_mask}{else}{:lang('请输入模型平台 API Key')}{/if}">
+                            <p class="help-block"><b>可选</b>，{:lang('留空不会覆盖原有密钥；如需更换，请输入新的 API Key 后保存。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">Base URL</span>
+                            <input name="base_url" class="layui-input" value="{$ai.base_url|default=''}"
+                                placeholder="{:lang('例如：https://dashscope.aliyuncs.com/compatible-mode/v1')}">
+                            <p class="help-block"><b>可选</b>，{:lang('选择供应商时会自动填入预设地址；部分平台需要按控制台实际地址填写。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('模型名称')}</span>
+                            <div class="ai-model-control margin-bottom-10">
+                                <div class="ai-model-input relative block">
+                                    <input name="model" class="layui-input" value="{$ai.model|default=''}"
+                                        placeholder="{:lang('例如：qwen-plus、deepseek-chat、glm-4-plus')}">
+                                    <a href="javascript:;" class="input-right-icon layui-icon layui-icon-refresh" id="FetchAiModels" title="{:lang('获取模型')}"></a>
+                                </div>
+                                <button type="button" id="TestAiModelConnection" class="layui-btn layui-btn-normal" style="height: 38px; line-height: 38px;">
+                                    <i class="layui-icon layui-icon-ok"></i> {:lang('测试连接')}
+                                </button>
+                                <div class="ai-model-input">
+                                    <select id="AiModelSelect" class="layui-select" lay-filter="modelSelect" lay-search>
+                                        <option value="">{:lang('请选择模型')}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block ai-model-help" id="ModelHelp">{:lang('点击输入框右侧刷新图标获取模型；也可手动填写模型名或从推荐列表中选择。')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">生成随机性</span>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 200px;">
+                                    <input name="temperature" type="number" min="0" max="2" step="0.1" class="layui-input" value="{$ai.temperature|default='0.3'}">
+                                </div>
+                                <div style="line-height: 38px; color: #666; margin-left: 10px;">
+                                    (Temperature)
+                                </div>
+                            </div>
+                            <p class="help-block"><b>可选</b>，值越大生成结果越具随机性和创造性，默认 0.3</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">最大输出</span>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 200px;">
+                                    <input name="max_tokens" type="number" min="1" max="128000" class="layui-input" value="{$ai.max_tokens|default='1200'}">
+                                </div>
+                                <div style="line-height: 38px; color: #666; margin-left: 10px;">
+                                    (Max Tokens)
+                                </div>
+                            </div>
+                            <p class="help-block"><b>可选</b>，控制大模型单次回复的最大 Token 长度限制，默认 1200</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('系统提示词')}</span>
+                            <textarea name="system_prompt" class="layui-textarea" style="min-height:120px"
+                                placeholder="{:lang('用于约束 AI 输出风格和分析重点')}">{$ai.system_prompt|default=''}</textarea>
+                            <p class="help-block"><b>可选</b>，用于设定大模型的角色定位、回答风格以及分析规则等。</p>
+                        </label>
+
+                    </fieldset>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="layui-form-item text-center">
+                    <button class="layui-btn" type="submit">{:lang('保存配置')}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<label class="layui-hide"><textarea id="AiProvidersData">{:json_encode($providers, JSON_UNESCAPED_UNICODE)}</textarea></label>
+
+<script>
+    $(function () {
+        var providers = JSON.parse($('#AiProvidersData').text() || '{}');
+        var urls = {
+            models: '{:url("models")}',
+            test: '{:url("test")}'
+        };
+        var escapeHtml = function (value) {
+            return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        };
+        var currentAiConfig = function () {
+            return {
+                provider: $('[name=provider]').val() || '',
+                api_key: $('[name=api_key]').val() || '',
+                base_url: $('[name=base_url]').val() || '',
+                model: $('[name=model]').val() || '',
+                temperature: $('[name=temperature]').val() || '0.3',
+                max_tokens: $('[name=max_tokens]').val() || '1200',
+                system_prompt: $('[name=system_prompt]').val() || ''
+            };
+        };
+        var refreshModelSelect = function (models) {
+            var current = $('[name=model]').val() || '';
+            var options = ['<option value="">{:lang("请选择模型")}</option>'];
+            $.each(models || [], function (_, model) {
+                var selected = model === current ? ' selected' : '';
+                options.push('<option value="' + escapeHtml(model) + '"' + selected + '>' + escapeHtml(model) + '</option>');
+            });
+            $('#AiModelSelect').html(options.join(''));
+            layui.form.render('select');
+        };
+        var providerModels = function (code) {
+            var provider = providers[code] || {};
+            return provider.models || (provider.model ? [provider.model] : []);
+        };
+        var updateProviderPreset = function (code) {
+            var provider = providers[code] || {};
+            if (provider.base_url) $('[name=base_url]').val(provider.base_url);
+            if (provider.model) $('[name=model]').val(provider.model);
+            $('#ProviderNote').text(provider.note || '');
+            refreshModelSelect(providerModels(code));
+        };
+
+        refreshModelSelect(providerModels($('[name=provider]').val()));
+        layui.form.on('select(provider)', function (data) {
+            updateProviderPreset(data.value);
+        });
+        layui.form.on('select(modelSelect)', function (data) {
+            if (data.value) $('[name=model]').val(data.value);
+        });
+        $('#FetchAiModels').on('click', function () {
+            $.form.load(urls.models, currentAiConfig(), 'post', function (ret) {
+                if (!ret || ret.code < 1) return true;
+                var data = ret.data || {};
+                refreshModelSelect(data.models || []);
+                $('#ModelHelp').text(ret.info || data.message || '');
+                $.msg.success(ret.info || '模型列表已更新', 2);
+                return false;
+            }, true, '正在获取模型');
+            return false;
+        });
+        $('#TestAiModelConnection').on('click', function () {
+            if (!$.trim($('[name=model]').val() || '')) {
+                $.msg.tips('请先填写或选择模型名称');
+                return false;
+            }
+            $.form.load(urls.test, currentAiConfig(), 'post', function (ret) {
+                if (!ret || ret.code < 1) return true;
+                $.msg.success(ret.info || '连接成功', 3);
+                return false;
+            }, true, '正在测试连接');
+        });
+    });
+</script>
+{/block}

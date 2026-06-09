@@ -1,0 +1,59 @@
+{extend name="table"}
+
+{block name="button"}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='user/vip/index_search'}
+    <table id="VipTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    var vipTypes = {:json_encode($types)};
+    $(function () {
+        $('#VipTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'id', type: 'desc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'id', title: 'ID', width: 80, align: 'center', sort: true},
+                {field: 'user_id', title: '用户ID', width: 90, align: 'center'},
+                {field: 'avatar_url', title: '头像', width: 70, align: 'center', templet: '<div>{{-$.layTable.showImage(d.avatar_url)}}</div>'},
+                {field: 'nickname', title: '昵称', width: 140},
+                {field: 'source', title: '变更来源', width: 120, align: 'left', templet: '#SourceTpl'},
+                {field: 'days', title: '变更天数', width: 120, align: 'left', sort: true, templet: '#DaysTpl'},
+                {field: 'before_vip_time', title: '变更前到期时间', width: 170, align: 'center', templet: '#BeforeTimeTpl'},
+                {field: 'after_vip_time', title: '变更后到期时间', width: 170, align: 'center', templet: '#AfterTimeTpl'},
+                {field: 'remark', title: '备注说明', width: 220},
+                {field: 'create_at', title: '记录时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+    });
+</script>
+
+<script type="text/html" id="DaysTpl">
+    {{# if (d.days > 0) { }}
+    <span class="color-green" style="font-weight: bold;">+{{d.days}} 天</span>
+    {{# } else { }}
+    <span class="color-red" style="font-weight: bold;">{{d.days}} 天</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="SourceTpl">
+    {{ vipTypes[d.source] || d.source || '其他类型' }}
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs layui-btn-warm" data-confirm="确定回滚该条会员记录吗？回滚将反向操作会员时长。" data-action="{:url('rollback')}" data-value="id#{{d.id}}">回滚</a>
+</script>
+
+<script type="text/html" id="BeforeTimeTpl">
+    {{-d.before_vip_time > 0 ? layui.util.toDateString(d.before_vip_time * 1000, 'yyyy-MM-dd HH:mm') : '<span class="color-desc">未开通</span>'}}
+</script>
+
+<script type="text/html" id="AfterTimeTpl">
+    {{-d.after_vip_time > 0 ? layui.util.toDateString(d.after_vip_time * 1000, 'yyyy-MM-dd HH:mm') : '<span class="color-desc">未开通</span>'}}
+</script>
+{/block}

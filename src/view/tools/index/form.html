@@ -1,0 +1,45 @@
+<form action="{:sysuri()}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="ToolsTable">
+    <div class="layui-card-body padding-left-40">
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">工具标题</span>
+            <input name="title" value="{$vo.title|default=''}" required vali-name="标题" placeholder="请输入标题" class="layui-input">
+            <p class="help-block"><b>必填</b>，请输入工具的显示标题</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">工具 Logo</span>
+            <div class="relative block">
+                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover placeholder="请选择工具 Logo" value="{$vo.logo|default=''}" name="logo">
+                <a class="input-right-icon layui-icon layui-icon-upload-drag" data-file="image" data-type="png,jpg,jpeg" data-field="logo"></a>
+            </div>
+            <p class="help-block"><b>必填</b>，请选择工具 Logo 图片</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">工具描述</span>
+            <input name="desc" value="{$vo.desc|default=''}" placeholder="请输入描述" class="layui-input">
+            <p class="help-block"><b>可选</b>，请输入工具的简短描述</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">目标 AppID</span>
+            <input name="appid" value="{$vo.appid|default=''}" placeholder="请输入目标小程序 AppID" class="layui-input">
+            <p class="help-block"><b>可选</b>，请输入跳转目标小程序的 AppID (如: wx1234567890abcdef)</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">跳转路径</span>
+            <input name="path" value="{$vo.path|default='pages/index/index'}" placeholder="请输入跳转路径" class="layui-input">
+            <p class="help-block"><b>可选</b>，请输入跳转目标小程序的页面路径 (默认: pages/index/index)</p>
+        </label>
+
+    </div>
+    <div class="hr-line-dashed"></div>
+    {notempty name='vo.id'}<input type="hidden" value="{$vo.id}" name="id">{/notempty}
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">保存数据</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>
+

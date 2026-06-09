@@ -1,0 +1,37 @@
+{extend name="table"}
+
+{block name="button"}
+<!--{if auth("remove")}-->
+<a data-confirm="确定要删除这些下载记录吗？" data-table-id="DownTable" data-action='{:url("remove")}' data-rule="id#{id}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</a>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='res/down/index_search'}
+    <table id="DownTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    $(function () {
+        $('#DownTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'id', type: 'desc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'id', title: 'ID', width: 80, align: 'center', sort: true},
+                {field: 'user_id', title: '用户 ID', width: 120, align: 'center', sort: true},
+                {field: 'res_id', title: '资源 ID', width: 120, align: 'center', sort: true},
+                {field: 'create_at', title: '下载时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作', width: 120, align: 'center'}
+            ]]
+        });
+    });
+</script>
+
+<script type="text/html" id="toolbar">
+    <!--{if auth("remove")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该下载记录吗？" data-action="{:url('remove')}" data-value="id#{{d.id}}">删除</a>
+    <!--{/if}-->
+</script>
+{/block}

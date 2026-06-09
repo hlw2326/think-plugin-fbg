@@ -1,0 +1,53 @@
+{extend name="main"}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card">
+    {include file='config/index/tabs'}
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <form action="{:url('share')}" class="layui-form" data-auto="true" method="post">
+                <div class="layui-card-body">
+                    <div class="layui-form-item">
+                        <span class="help-block">{:lang('统一分享配置会作为所有页面的默认分享卡片；页面单独传入 title/path/imageUrl 时会覆盖这里的配置。标题留空时前端自动使用小程序名称，图片留空时微信自动截当前页。')}</span>
+                    </div>
+
+                    <fieldset class="layui-bg-gray">
+                        <legend><b class="layui-badge think-bg-violet">{:lang('默认分享')}</b></legend>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('分享标题')}</span>
+                            <input class="layui-input" name="title" maxlength="30"
+                                placeholder="{:lang('留空则自动使用小程序名称')}" value='{$share.title|default=""}'>
+                            <p class="help-block"><b>可选</b>，{:lang('默认分享卡片标题 (留空则自动使用小程序名称)')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('默认路径')}</span>
+                            <input class="layui-input" name="path"
+                                placeholder="/pages/index/index" value='{$share.path|default="/pages/index/index"}'>
+                            <p class="help-block"><b>可选</b>，{:lang('默认分享跳转路径 (例如: pages/index/index)')}</p>
+                        </label>
+
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">{:lang('分享缩略图')}</span>
+                            <div class="relative block">
+                                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover
+                                    placeholder="{:lang('请上传分享卡片缩略图（可选）')}" value='{$share.image|default=""}' name="image">
+                                <a class="input-right-icon layui-icon layui-icon-upload-drag" data-file="image"
+                                    data-type="png,jpg,jpeg" data-field="image"></a>
+                            </div>
+                            <p class="help-block"><b>可选</b>，{:lang('请上传缩略图以用作分享卡片背景，推荐 5:4 比例')}</p>
+                        </label>
+
+                    </fieldset>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="layui-form-item text-center">
+                    <button class="layui-btn" type="submit">保存分享配置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+

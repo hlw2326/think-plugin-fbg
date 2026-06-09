@@ -1,0 +1,29 @@
+<form action="{:sysuri()}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="CateTable">
+    <div class="layui-card-body padding-left-40">
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">分类名称</span>
+            <input name="name" value="{$vo.name|default=''}" required vali-name="分类名称" placeholder="请输入分类名称" class="layui-input">
+            <p class="help-block"><b>必填</b>，请输入资源分类的显示名称 (如: 动态风景)</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">分类编码</span>
+            <input name="code" value="{$vo.code|default=''}" required vali-name="分类编码" placeholder="请输入分类编码" class="layui-input">
+            <p class="help-block"><b>必填</b>，英文标识，用于某些特定的识别 (如: scenery)</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">排序权重</span>
+            <input name="sort" type="number" min="0" value="{$vo.sort|default='0'}" placeholder="请输入排序权重" class="layui-input">
+            <p class="help-block"><b>可选</b>，数值越大越靠前展示 (默认: 0)</p>
+        </label>
+
+    </div>
+    <div class="hr-line-dashed"></div>
+    {notempty name='vo.id'}<input type="hidden" value="{$vo.id}" name="id">{/notempty}
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">保存数据</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>

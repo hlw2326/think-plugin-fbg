@@ -1,0 +1,25 @@
+<form action="{:sysuri()}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="HelpTable">
+    <div class="layui-card-body padding-left-40">
+        
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">问题标题</span>
+            <input name="question" value="{$vo.question|default=''}" required vali-name="问题" placeholder="请输入问题标题" class="layui-input">
+            <p class="help-block"><b>必填</b>，请输入常见问题的具体问题内容</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">问题答案</span>
+            <textarea name="answer" placeholder="请输入答案内容" class="layui-textarea">{$vo.answer|default=''}</textarea>
+            <p class="help-block"><b>可选</b>，支持占位符：{day_parse_count}、{reward_parse_count}，小程序端会按当前配置替换。</p>
+        </label>
+
+    </div>
+    <div class="hr-line-dashed"></div>
+    {notempty name='vo.id'}<input type="hidden" value="{$vo.id}" name="id">{/notempty}
+    <input type="hidden" value="faq" name="type">
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">保存数据</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>
+

@@ -1,0 +1,16 @@
+/vendor/
+/runtime/
+/.env
+/.env.*
+!.env.example
+
+/.idea/
+/.vscode/
+
+*.log
+*.cache
+*.tmp
+*.bak
+*.swp
+Thumbs.db
+.DS_Store

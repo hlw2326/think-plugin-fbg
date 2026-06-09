@@ -1,0 +1,167 @@
+{extend name="table"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-modal='{:url("add")}' data-title="{:lang('添加小程序')}" class="layui-btn layui-btn-sm layui-btn-primary">添加小程序</button>
+<!--{/if}-->
+<!--{if auth("import")}-->
+<button data-modal='{:url("import")}' data-title="导入小程序JSON数据" class="layui-btn layui-btn-sm layui-btn-primary">导入JSON数据</button>
+<!--{/if}-->
+<!--{if auth("export")}-->
+<a class="layui-btn layui-btn-sm layui-btn-primary" href='{:url("export")}' target="_blank">导出数据</a>
+<!--{/if}-->
+<!--{if auth("remove")}-->
+<a data-confirm="确定要删除这些小程序吗？" data-table-id="AppTable" data-action='{:url("remove")}' data-rule="id#{id}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</a>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='mp/index/index_search'}
+    <table id="AppTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    $(function () {
+        $('#AppTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'sort desc,id', type: 'asc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'sort', title: '排序', width: 100, align: 'center', sort: true, templet: '#SortInputTpl'},
+                {field: 'logo', title: 'Logo', width: 70, align: 'center', templet: '<div>{{-$.layTable.showImage(d.logo)}}</div>'},
+                {field: 'name', title: '名称', width: 150},
+                {field: 'appid', title: 'AppID', width: 180, templet: '#AppIdTpl'},
+                {field: 'appsecret', title: 'AppSecret', width: 200, templet: '#AppSecretTpl'},
+                {field: 'vip_no_ad', title: 'VIP去广告', width: 110, align: 'center', templet: '#VipNoAdTpl'},
+                {title: '广告状态', width: 260, align: 'center', templet: '#AdStatusTpl'},
+                {field: 'custom_reply_enabled', title: '客服消息', width: 120, align: 'center', templet: '#CustomSwitchTpl'},
+                {field: 'status', title: '状态', width: 120, align: 'center', templet: '#StatusSwitchTpl'},
+                {field: 'create_at', title: '创建时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+
+        layui.form.on('switch(StatusSwitch)', function (obj) {
+            var data = {id: obj.value, status: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('state')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#AppTable').trigger('reload');
+                }); else $('#AppTable').trigger('reload');
+                return false;
+            }, false);
+        });
+
+        layui.form.on('switch(CustomSwitch)', function (obj) {
+            var data = {id: obj.value, custom_reply_enabled: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('custom')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#AppTable').trigger('reload');
+                }); else $('#AppTable').trigger('reload');
+                return false;
+            }, false);
+        });
+
+        $('#AppTable').trigger('tool', function (obj) {
+            if (obj.event === 'copy-json') {
+                var copyData = Object.assign({}, obj.data);
+                delete copyData.id;
+                delete copyData.create_at;
+                delete copyData.update_at;
+                for (var key in copyData) {
+                    if (key.indexOf('LAY_') === 0) {
+                        delete copyData[key];
+                    }
+                }
+                layui.lay.clipboard.writeText({
+                    text: JSON.stringify(copyData, null, 4),
+                    done: function () {
+                        $.msg.tips('JSON数据已复制到剪贴板！');
+                    },
+                    error: function () {
+                        $.msg.tips('复制失败，请手动复制！');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<script type="text/html" id="SortInputTpl">
+    <input type="number" min="0" data-blur-number="0" data-action-blur="{:sysuri()}" data-value="id#{{d.id}};action#sort;sort#{value}" data-loading="false" value="{{d.sort}}" class="layui-input text-center">
+</script>
+
+<script type="text/html" id="VipNoAdTpl">
+    {{-d.vip_no_ad ? '<span class="layui-badge layui-bg-green">开启</span>' : '<span class="layui-badge layui-bg-gray">关闭</span>'}}
+</script>
+
+<script type="text/html" id="AppSecretTpl">
+    {{# if (d.appsecret) { }}
+    {{# if (d.appsecret.length > 12) { }}
+    <span>{{ d.appsecret.substring(0, 6) }}****************{{ d.appsecret.substring(d.appsecret.length - 6) }}</span>
+    {{# } else { }}
+    <span>{{ d.appsecret }}</span>
+    {{# } }}
+    {{# } else { }}
+    <span class="color-desc">-</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="AppIdTpl">
+    {{# if (d.appid) { }}
+    <span class="pointer" data-copy="{{d.appid}}" data-tips-text="点击复制 AppID">
+        {{d.appid}} <span class="layui-icon layui-icon-file color-desc margin-left-5" style="font-size:12px"></span>
+    </span>
+    {{# } else { }}
+    <span class="color-desc">-</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="AdStatusTpl">
+    <div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; width: 100%; height: 100%;">
+        {{# if (d.ad_global_enabled === 0) { }}
+        <span class="layui-badge layui-bg-red ad-status-badge" style="padding: 0 6px !important;">广告已禁用</span>
+        {{# } else { }}
+        <span class="layui-badge ad-status-badge {{ d.ad_enabled_banner ? 'active' : 'inactive' }}">横幅</span>
+        <span class="layui-badge ad-status-badge {{ d.ad_enabled_grid ? 'active' : 'inactive' }}">格子</span>
+        <span class="layui-badge ad-status-badge {{ d.ad_enabled_custom ? 'active' : 'inactive' }}">原生</span>
+        <span class="layui-badge ad-status-badge {{ d.ad_enabled_video ? 'active' : 'inactive' }}">视频</span>
+        <span class="layui-badge ad-status-badge {{ d.ad_enabled_reward ? 'active' : 'inactive' }}">激励</span>
+        <span class="layui-badge ad-status-badge {{ d.ad_enabled_popup ? 'active' : 'inactive' }}">插屏</span>
+        {{# } }}
+    </div>
+</script>
+
+<script type="text/html" id="StatusSwitchTpl">
+    <!--{if auth("state")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="已启用|已禁用" lay-filter="StatusSwitch" {{-d.status>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.status ? '<b class="color-green">已启用</b>' : '<b class="color-red">已禁用</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="CustomSwitchTpl">
+    <!--{if auth("custom")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="开启|关闭" lay-filter="CustomSwitch" {{-d.custom_reply_enabled>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.custom_reply_enabled ? '<b class="color-green">开启</b>' : '<b class="color-red">关闭</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="toolbar">
+    <!--{if auth("edit")}-->
+    <a class="layui-btn layui-btn-sm" data-modal='{:url("edit")}?id={{d.id}}' data-title="编辑 - {{d.name}} - {{d.appid}}">编辑</a>
+    <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="copy-json">复制JSON</a>
+    <!--{/if}-->
+    <!--{if auth("pages")}-->
+    <a class="layui-btn layui-btn-sm" data-modal='{:url("pages")}?id={{d.id}}' data-title="配置页面 - {{d.name}} - {{d.appid}}">页面配置</a>
+    <!--{/if}-->
+    <!--{if auth("ad")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-warm" data-width="40%" data-modal='{:url("ad")}?id={{d.id}}' data-title="广告配置 - {{d.name}} - {{d.appid}}">广告配置</a>
+    <!--{/if}-->
+    <!--{if auth("remove")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该小程序吗？" data-action="{:url('remove')}" data-value="id#{{d.id}}">删除</a>
+    <!--{/if}-->
+</script>
+{/block}
+

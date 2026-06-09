@@ -1,0 +1,45 @@
+{extend name="main"}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card">
+    {include file='config/index/tabs'}
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <form action="{:url('index')}" class="layui-form" data-auto="true" method="post">
+                <div class="layui-card-body">
+                    <fieldset class="layui-bg-gray">
+                        <legend><b class="layui-badge think-bg-blue">基础配置</b></legend>
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">使用步骤</span>
+                            <textarea name="help_steps" class="layui-textarea" rows="5" placeholder="每行一个步骤">{$fbg.help_steps|default=''}</textarea>
+                            <p class="help-block"><b>可选</b>，每行一条步骤，小程序帮助页会按换行拆分显示。</p>
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="layui-bg-gray mt-10">
+                        <legend><b class="layui-badge think-bg-blue">广告奖励配置</b></legend>
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">看视频广告奖励积分数</span>
+                            <input name="ad_reward_score" class="layui-input" type="number" min="0" placeholder="请输入每次观看视频广告获得的积分数量" value="{$fbg.ad_reward_score|default='10'}">
+                            <p class="help-block"><b>必填</b>，用户每次完整观看视频广告后获得的积分奖励，默认为 10 积分。</p>
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="layui-bg-gray mt-10">
+                        <legend><b class="layui-badge think-bg-blue">下载配置</b></legend>
+                        <label class="layui-form-item relative block">
+                            <span class="color-green font-w7">单次下载扣除积分数</span>
+                            <input name="download_score" class="layui-input" type="number" min="0" placeholder="请输入每次下载扣除的积分数量" value="{$fbg.download_score|default='10'}">
+                            <p class="help-block"><b>必填</b>，用户每次下载资源时扣除的积分数量，默认为 10 积分。</p>
+                        </label>
+                    </fieldset>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="layui-form-item text-center">
+                    <button class="layui-btn" type="submit">保存基础配置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}

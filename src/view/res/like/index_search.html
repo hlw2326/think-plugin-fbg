@@ -1,0 +1,30 @@
+<form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+    <fieldset>
+        <legend>{:lang('条件搜索')}</legend>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">用户 ID</label>
+            <div class="layui-input-inline">
+                <input name="user_id" value="{$get.user_id|default=''}" placeholder="请输入用户 ID" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">资源 ID</label>
+            <div class="layui-input-inline">
+                <input name="res_id" value="{$get.res_id|default=''}" placeholder="请输入资源 ID" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">创建时间</label>
+            <div class="layui-input-inline" style="width:280px">
+                <input name="create_at" value="{$get.create_at|default=''}" placeholder="选择时间范围" class="layui-input" data-date-range>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary" data-form-search type="submit"><i class="layui-icon">&#xe615;</i> 搜索</button>
+        </div>
+    </fieldset>
+</form>

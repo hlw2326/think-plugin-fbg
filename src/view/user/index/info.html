@@ -1,0 +1,211 @@
+<div class="layui-card" style="background-color: #f2f2f2; margin: 0;">
+    <!-- Section 1: 基本信息 -->
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table class="layui-table" lay-skin="line" style="margin: 0;">
+                <colgroup>
+                    <col width="120">
+                    <col width="180">
+                    <col width="120">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">用户头像</td>
+                        <td>
+                            {notempty name="vo.avatar_url"}
+                            <img src="{$vo.avatar_url}" style="width: 30px; height: 30px; border-radius: 50%;" data-tips-image>
+                            {else}
+                            <span class="color-desc">无</span>
+                            {/notempty}
+                        </td>
+                        <td style="background-color: #fafafa; font-weight: 500;">用户 ID</td>
+                        <td style="font-weight: bold; color: #333;">{$vo.id|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">用户昵称</td>
+                        <td>{$vo.nickname|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">手机号码</td>
+                        <td>{$vo.phone|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">性别</td>
+                        <td>
+                            {if isset($vo.gender) && $vo.gender == 1}男{elseif isset($vo.gender) && $vo.gender == 2}女{else}未知{/if}
+                        </td>
+                        <td style="background-color: #fafafa; font-weight: 500;">当前状态</td>
+                        <td>
+                            {if isset($vo.status) && $vo.status == 1}
+                            <span class="layui-badge layui-bg-green">正常</span>
+                            {else}
+                            <span class="layui-badge layui-bg-red">禁用</span>
+                            {/if}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">生日</td>
+                        <td>{$vo.birthday|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">所属地区</td>
+                        <td>{$vo.region|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">可用积分</td>
+                        <td style="font-weight: bold; color: #ff5722;">{$vo.score|default='0'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">累计下载</td>
+                        <td>{$vo.down_total|default='0'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">是否免广告</td>
+                        <td colspan="3">
+                            {if isset($vo.vip_no_ad) && $vo.vip_no_ad == 1}
+                            <span class="layui-badge layui-bg-green">是</span>
+                            {else}
+                            <span class="layui-badge layui-bg-gray">否</span>
+                            {/if}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 2: 平台与推荐 -->
+    <div class="layui-card" style="margin-top: 15px;">
+        <div class="layui-card-body">
+            <table class="layui-table" lay-skin="line" style="margin: 0;">
+                <colgroup>
+                    <col width="120">
+                    <col width="180">
+                    <col width="120">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">推荐人 ID</td>
+                        <td>{$vo.pid|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">会员过期</td>
+                        <td>
+                            {if !empty($vo.vip_time) && $vo.vip_time > 0}
+                            {:date('Y-m-d H:i', intval($vo.vip_time))}
+                            {else}
+                            <span class="color-desc">未开通</span>
+                            {/if}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">小程序 AppID</td>
+                        <td colspan="3">{$vo.appid|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">微信 OpenID</td>
+                        <td colspan="3">{$vo.openid|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">微信 UnionID</td>
+                        <td colspan="3">{$vo.unionid|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">登录 Token</td>
+                        <td colspan="3" style="word-break: break-all; font-family: monospace; font-size: 12px; color: #666;">{$vo.token|default='-'}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 3: 设备及版本 -->
+    <div class="layui-card" style="margin-top: 15px;">
+        <div class="layui-card-body">
+            <table class="layui-table" lay-skin="line" style="margin: 0;">
+                <colgroup>
+                    <col width="120">
+                    <col width="180">
+                    <col width="120">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">设备型号</td>
+                        <td>{$vo.device_model|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">系统版本</td>
+                        <td>{$vo.device_system|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">屏幕分辨率</td>
+                        <td>
+                            {if !empty($vo.screen_width) && !empty($vo.screen_height)}
+                            {$vo.screen_width}x{$vo.screen_height}
+                            {else}
+                            -
+                            {/if}
+                        </td>
+                        <td style="background-color: #fafafa; font-weight: 500;">SDK 版本</td>
+                        <td>{$vo.sdk_version|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">小程序版本</td>
+                        <td>{$vo.version|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">渠道来源</td>
+                        <td>{$vo.channel|default='-'}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 4: 登录与时间记录 -->
+    <div class="layui-card" style="margin-top: 15px;">
+        <div class="layui-card-body">
+            <table class="layui-table" lay-skin="line" style="margin: 0;">
+                <colgroup>
+                    <col width="120">
+                    <col width="180">
+                    <col width="120">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">最近登录 IP</td>
+                        <td>{$vo.login_ip|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">最近登录时间</td>
+                        <td>{$vo.login_at|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">上次登录 IP</td>
+                        <td>{$vo.last_login_ip|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">上次登录时间</td>
+                        <td>{$vo.last_login_at|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">注册时间</td>
+                        <td>{$vo.create_at|default='-'}</td>
+                        <td style="background-color: #fafafa; font-weight: 500;">更新时间</td>
+                        <td>{$vo.update_at|default='-'}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 5: 其它说明 -->
+    <div class="layui-card" style="margin-top: 15px; ">
+        <div class="layui-card-body">
+            <table class="layui-table" lay-skin="line" style="margin: 0;">
+                <colgroup>
+                    <col width="120">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">个性签名</td>
+                        <td>{$vo.signature|default='-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafafa; font-weight: 500;">管理员备注</td>
+                        <td>{$vo.remark|default='-'}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

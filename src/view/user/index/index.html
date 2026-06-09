@@ -1,0 +1,120 @@
+{extend name="table"}
+
+{block name="button"}
+
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='user/index/index_search'}
+    <table id="UserTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    $(function () {
+        $('#UserTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'id', type: 'desc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'id', title: 'ID', width: 70, align: 'center', sort: true},
+                {field: 'avatar_url', title: '头像', width: 70, align: 'center', templet: '<div>{{-$.layTable.showImage(d.avatar_url)}}</div>'},
+                {field: 'nickname', title: '昵称', width: 140},
+                {field: 'pid', title: '推荐人ID', width: 100},
+                {field: 'appid', title: 'appid', width: 170, templet: '#AppIdTpl'},
+                {field: 'vip_time', title: '会员到期', width: 150, align: 'center', templet: '#VipTimeTpl'},
+                {field: 'score', title: '积分', width: 100, align: 'center', sort: true},
+                {field: 'down_total', title: '累计下载', width: 110, align: 'center', sort: true},
+                {field: 'vip_no_ad', title: '免广告', width: 100, align: 'center', templet: '#VipNoAdSwitchTpl'},
+                {field: 'login_at', title: '最近登录时间', width: 130, align: 'center', sort: true},
+                {field: 'login_ip', title: '最近登录IP', width: 100, align: 'center'},
+                {field: 'device_model', title: '设备型号', width: 100, templet: '#DeviceModelTpl'},
+                {field: 'device_system', title: '系统版本', width: 100},
+                {title: '分辨率', width: 100, align: 'center', templet: '<div>{{d.screen_width && d.screen_height ? d.screen_width + "x" + d.screen_height : "--"}}</div>'},
+                {field: 'status', title: '状态', width: 100, align: 'center', templet: '#StatusSwitchTpl'},
+                {field: 'create_at', title: '注册时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+
+        layui.form.on('switch(StatusSwitch)', function (obj) {
+            var data = {id: obj.value, status: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('state')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#UserTable').trigger('reload');
+                }); else $('#UserTable').trigger('reload');
+                return false;
+            }, false);
+        });
+
+        layui.form.on('switch(VipNoAdSwitch)', function (obj) {
+            var data = {id: obj.value, vip_no_ad: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('state')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#UserTable').trigger('reload');
+                }); else $('#UserTable').trigger('reload');
+                return false;
+            }, false);
+        });
+    });
+</script>
+
+<script type="text/html" id="DeviceModelTpl">
+    {{# if (d.device_model && d.device_model.toLowerCase() === 'microsoft') { }}
+    <span class="color-red">{{d.device_model}}</span>
+    {{# } else { }}
+    <span>{{d.device_model || ''}}</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="AppIdTpl">
+    {{# if (d.appid) { }}
+    <span class="pointer" data-copy="{{d.appid}}" data-tips-text="点击复制 AppID">
+        {{d.appid}} <span class="layui-icon layui-icon-file color-desc margin-left-5" style="font-size:12px"></span>
+    </span>
+    {{# } else { }}
+    <span class="color-desc">-</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="VipTimeTpl">
+    {{# if (!d.vip_time || d.vip_time <= 0) { }}
+    <span class="color-desc">未开通</span>
+    {{# } else if (d.vip_time * 1000 > Date.now()) { }}
+    <span class="color-green" style="font-weight: bold;">{{layui.util.toDateString(d.vip_time * 1000, 'yyyy-MM-dd HH:mm')}}</span>
+    {{# } else { }}
+    <span class="color-red">{{layui.util.toDateString(d.vip_time * 1000, 'yyyy-MM-dd HH:mm')}}</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="StatusSwitchTpl">
+    <!--{if auth("state")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="正常|禁用" lay-filter="StatusSwitch" {{-d.status>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.status ? '<b class="color-green">正常</b>' : '<b class="color-red">禁用</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="VipNoAdSwitchTpl">
+    <!--{if auth("state")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="VipNoAdSwitch" {{-d.vip_no_ad>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.vip_no_ad ? '<b class="color-green">是</b>' : '<b class="color-red">否</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="toolbar">
+    <!--{if auth("score")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-normal" data-modal='{:url("score")}?id={{d.id}}' data-title="积分充值/扣除">积分</a>
+    <!--{/if}-->
+    <!--{if auth("vip")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-warm" data-modal='{:url("vip")}?id={{d.id}}' data-title="会员充值/延期/扣除">会员</a>
+    <!--{/if}-->
+    <!--{if auth("logout")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要让该用户退出登录吗？" data-action="{:url('logout')}" data-value="id#{{d.id}}">退出登录</a>
+    <!--{/if}-->
+    <!--{if auth("info")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-normal" data-modal='{:url("info")}?id={{d.id}}' data-title="用户信息">信息</a>
+    <!--{/if}-->
+</script>
+{/block}

@@ -1,0 +1,54 @@
+<form action="{:sysuri('import')}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="HelpTable">
+    <div class="layui-card-body padding-left-40">
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">选择文件</span>
+            <div class="relative">
+                <input id="json_file_name" readonly class="layui-input padding-right-30" placeholder="请选择导出的 .json 数据文件" style="cursor: pointer;">
+                <a class="input-right-icon" onclick="$('#json_file').click()"><i class="layui-icon layui-icon-upload"></i></a>
+                <input type="file" id="json_file" accept=".json" style="display: none;">
+            </div>
+            <p class="help-block"><b>可选</b>，请选择导出的 <code>.json</code> 数据文件，系统会自动读取内容填入下方输入框。</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">JSON 数据</span>
+            <textarea name="json_data" required vali-name="JSON数据" placeholder='例如：
+[
+    {
+        "question": "使用时遇到问题怎么办？",
+        "answer": "可以在客服聊天窗口联系客服处理。",
+        "sort": 200,
+        "status": 1
+    }
+]' class="layui-textarea" style="height: 250px; font-family: monospace; font-size: 13px; line-height: 1.5;"></textarea>
+            <p class="help-block"><b>必填</b>，可以手动修改或直接粘贴 JSON 数据，支持单条对象或数组</p>
+        </label>
+
+    </div>
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">开始导入</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>
+
+<script>
+    $(function() {
+        $('#json_file_name').on('click', function() {
+            $('#json_file').click();
+        });
+
+        $('#json_file').on('change', function (e) {
+            var file = e.target.files[0];
+            if (file) {
+                $('#json_file_name').val(file.name);
+                var reader = new FileReader();
+                reader.onload = function (evt) {
+                    $('textarea[name="json_data"]').val(evt.target.result);
+                };
+                reader.readAsText(file);
+            }
+            this.value = '';
+        });
+    });
+</script>

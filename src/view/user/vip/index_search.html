@@ -1,0 +1,42 @@
+<form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+    <fieldset>
+        <legend>{:lang('条件搜索')}</legend>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">用户ID</label>
+            <div class="layui-input-inline">
+                <input name="user_id" value="{$get.user_id|default=''}" placeholder="请输入用户ID" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">变更来源</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="source" lay-append-to>
+                    <option value="">-- 全部 --</option>
+                    {foreach $types as $k => $v}
+                    <option value="{$k}" {eq name='$get.source|default=""' value='$k'}selected{/eq}>{$v}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">备注说明</label>
+            <div class="layui-input-inline">
+                <input name="remark" value="{$get.remark|default=''}" placeholder="请输入备注说明" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">记录时间</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="create_at" value="{$get.create_at|default=''}" placeholder="请选择记录时间" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary" data-form-search type="submit"><i class="layui-icon">&#xe615;</i> 搜索</button>
+        </div>
+    </fieldset>
+</form>

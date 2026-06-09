@@ -1,0 +1,88 @@
+{extend name="table"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-modal='{:url("add")}' data-title="添加工具" class="layui-btn layui-btn-sm layui-btn-primary">添加工具</button>
+<!--{/if}-->
+<!--{if auth("import")}-->
+<button data-modal='{:url("import")}' data-title="导入工具数据" class="layui-btn layui-btn-sm layui-btn-primary">导入数据</button>
+<!--{/if}-->
+<!--{if auth("export")}-->
+<a class="layui-btn layui-btn-sm layui-btn-primary" href='{:url("export")}' target="_blank">导出数据</a>
+<!--{/if}-->
+<!--{if auth("remove")}-->
+<a data-confirm="确定要删除这些工具吗？" data-table-id="ToolsTable" data-action='{:url("remove")}' data-rule="id#{id}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</a>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='tools/index/index_search'}
+    <table id="ToolsTable" data-url="{:sysuri('index')}" data-target-search="form.form-search"></table>
+</div>
+
+<script>
+    $(function () {
+        $('#ToolsTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'sort desc,id', type: 'asc'},
+            cols: [[
+                {checkbox: true, fixed: true},
+                {field: 'id', title: 'ID', width: 70, align: 'center', sort: true},
+                {field: 'sort', title: '排序', width: 100, align: 'center', sort: true, templet: '#SortInputTpl'},
+                {field: 'logo', title: 'Logo', width: 70, align: 'center', templet: '<div>{{-$.layTable.showImage(d.logo)}}</div>'},
+                {field: 'title', title: '标题', width: 200},
+                {field: 'desc', title: '描述', width: 300},
+                {field: 'appid', title: '跳转 AppID', width: 180, templet: '#AppIdTpl'},
+                {field: 'path', title: '路径', minWidth: 180},
+                {field: 'click_count', title: '点击次数', width: 120, align: 'center', sort: true},
+                {field: 'status', title: '状态', width: 120, align: 'center', templet: '#StatusSwitchTpl'},
+                {field: 'create_at', title: '创建时间', width: 170, align: 'center', sort: true},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+
+        layui.form.on('switch(StatusSwitch)', function (obj) {
+            var data = {id: obj.value, status: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('state')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#ToolsTable').trigger('reload');
+                }); else $('#ToolsTable').trigger('reload');
+                return false;
+            }, false);
+        });
+    });
+</script>
+
+<script type="text/html" id="AppIdTpl">
+    {{# if (d.appid) { }}
+    <span class="pointer" data-copy="{{d.appid}}" data-tips-text="点击复制 AppID">
+        {{d.appid}} <span class="layui-icon layui-icon-file color-desc margin-left-5" style="font-size:12px"></span>
+    </span>
+    {{# } else { }}
+    <span class="color-desc">-</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="SortInputTpl">
+    <input type="number" min="0" data-blur-number="0" data-action-blur="{:sysuri()}" data-value="id#{{d.id}};action#sort;sort#{value}" data-loading="false" value="{{d.sort}}" class="layui-input text-center">
+</script>
+
+<script type="text/html" id="StatusSwitchTpl">
+    <!--{if auth("state")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="已启用|已禁用" lay-filter="StatusSwitch" {{-d.status>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.status ? '<b class="color-green">已启用</b>' : '<b class="color-red">已禁用</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="toolbar">
+    <!--{if auth("edit")}-->
+    <a class="layui-btn layui-btn-sm" data-modal='{:url("edit")}?id={{d.id}}' data-title="编辑工具">编辑</a>
+    <!--{/if}-->
+    <!--{if auth("remove")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该工具吗？" data-action="{:url('remove')}" data-value="id#{{d.id}}">删除</a>
+    <!--{/if}-->
+</script>
+{/block}
+

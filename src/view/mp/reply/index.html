@@ -1,0 +1,230 @@
+{extend name="table"}
+
+{block name="button"}
+<!--{if auth("defaults")}-->
+<button class="layui-btn layui-btn-sm layui-btn-primary" data-width="1100px" data-modal='{:url("defaults")}?appid={$appid|default=""}' data-title="默认客服回复">默认回复</button>
+<!--{/if}-->
+
+<!--{if auth("add")}-->
+<button class="layui-btn layui-btn-sm layui-btn-primary" data-width="1100px" data-modal='{:url("add")}?appid={$appid|default=""}' data-title="添加客服回复规则">添加规则</button>
+<!--{/if}-->
+
+<!--{if auth("import")}-->
+<button data-modal='{:url("import")}?appid={$appid|default=""}' data-title="导入回复规则数据" class="layui-btn layui-btn-sm layui-btn-primary">导入数据</button>
+<!--{/if}-->
+
+<!--{if auth("export")}-->
+<a class="layui-btn layui-btn-sm layui-btn-primary" href='{:url("export")}?appid={$appid|default=""}' target="_blank">导出数据</a>
+<!--{/if}-->
+
+<!--{if auth("state")}-->
+<button class="layui-btn layui-btn-sm layui-btn-primary" data-table-id="RuleTable" data-action='{:url("state")}' data-rule="id#{id};status#0">批量禁用</button>
+<!--{/if}-->
+
+<!--{if auth("remove")}-->
+<button class="layui-btn layui-btn-sm layui-btn-danger" data-table-id="RuleTable" data-action='{:url("remove")}' data-rule="id#{id}">批量删除</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <ul class="layui-tab-title">
+        {if !isset($appid) or $appid eq ''}
+        <li class="layui-this" data-open="{:url('index')}">通用回复</li>
+        {else}
+        <li data-open="{:url('index')}">通用回复</li>
+        {/if}
+        {foreach name='mps' item='mp'}
+        {if isset($appid) and $appid eq $mp.appid}
+        <li class="layui-this" data-open="{:url('index')}?appid={$mp.appid}">{$mp.name|default='未命名'}</li>
+        {else}
+        <li data-open="{:url('index')}?appid={$mp.appid}">{$mp.name|default='未命名'}</li>
+        {/if}
+        {/foreach}
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-bg-gray padding-15 margin-bottom-15">
+            小程序客服消息回调地址：<code>{:request()->domain()}/plugin-fbg/api.v1.custom/index?appid=小程序AppID</code>
+        </div>
+        {include file='mp/reply/index_search'}
+        <table id="RuleTable" data-url="{:request()->url()}" data-target-search="form.form-search"></table>
+    </div>
+</div>
+{/block}
+
+{block name='script'}
+<script>
+    $(function () {
+        $('#RuleTable').layTable({
+            even: true, height: 'full',
+            sort: {field: 'sort desc,id', type: 'asc'},
+            where: {appid: '{$appid|default=""}'},
+            cols: [[
+                {checkbox: true},
+                {field: 'sort', title: '排序', width: 100, align: 'center', sort: true, templet: '#SortInputTpl'},
+                {field: 'appid', title: '小程序 AppID', width: 180, templet: '#AppIdTpl'},
+                {field: 'match_name', title: '匹配方式', align: 'center', width: 120},
+                {field: 'keys', title: '匹配内容', minWidth: 140},
+                {field: 'type', title: '回复类型', align: 'center', minWidth: 100},
+                {field: 'code', title: '在线预览', align: 'center', minWidth: 100, templet: '#PreViewTpl'},
+                {field: 'reply_count', title: '回复次数', align: 'center', width: 120, sort: true},
+                {field: 'status', title: '使用状态', align: 'center', minWidth: 110, templet: '#StatusSwitchTpl'},
+                {field: 'create_at', title: '添加时间', align: 'center', minWidth: 170},
+                {toolbar: '#toolbar', title: '操作'}
+            ]]
+        });
+
+        layui.form.on('switch(StatusSwitch)', function (obj, data) {
+            data = {id: obj.value, status: obj.elem.checked > 0 ? 1 : 0};
+            $.form.load("{:url('state')}", data, 'post', function (ret) {
+                if (ret.code < 1) $.msg.error(ret.info, 3, function () {
+                    $('#RuleTable').trigger('reload');
+                }); else {
+                    $('#RuleTable').trigger('reload');
+                }
+                return false;
+            }, false);
+        });
+
+        // Frontend message preview popup
+        $('body').off('click', '[data-preview-reply]').on('click', '[data-preview-reply]', function() {
+            var type = $(this).attr('data-preview-reply');
+            var content = $(this).attr('data-preview-content') || '';
+            var image = $(this).attr('data-preview-image') || '';
+            var title = $(this).attr('data-preview-title') || '';
+            var pagepath = $(this).attr('data-preview-pagepath') || '';
+            var url = $(this).attr('data-preview-url') || '';
+            
+            var now = new Date();
+            var hh = String(now.getHours()).padStart(2, '0');
+            var mm = String(now.getMinutes()).padStart(2, '0');
+            var timeStr = hh + ':' + mm;
+
+            var bubbleHtml = '';
+            var defaultImg = '/static/theme/img/image.png';
+            if (type === 'image') {
+                bubbleHtml = '<img src="' + image + '" style="max-width:100%; border-radius:4px; display:block;">';
+            } else if (type === 'link') {
+                var linkImg = image || defaultImg;
+                bubbleHtml = 
+                    '<div style="width:200px;">' +
+                        '<div style="font-weight:bold; font-size:14px; line-height:1.3; color:#191919; margin-bottom:4px;">' + (title || '图文链接标题') + '</div>' +
+                        '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
+                            '<div style="font-size:12px; color:#888; line-height:1.3; flex:1; padding-right:8px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;">' + (content || '图文链接描述') + '</div>' +
+                            '<img style="width:40px; height:40px; object-fit:cover; border-radius:4px; flex-shrink:0;" src="' + linkImg + '" alt="thumb">' +
+                        '</div>' +
+                    '</div>';
+            } else if (type === 'miniprogrampage') {
+                var pageImg = image || defaultImg;
+                bubbleHtml = 
+                    '<div style="width:200px; background:#fff; border-radius:4px; overflow:hidden;">' +
+                        '<div style="font-size:14px; color:#191919; margin-bottom:8px; line-height:1.3;">' + (title || '小程序卡片标题') + '</div>' +
+                        '<img style="width:100%; height:120px; object-fit:cover; border-radius:4px; margin-bottom:6px;" src="' + pageImg + '" alt="cover">' +
+                        '<div style="display:flex; align-items:center; border-top:1px solid #eee; padding-top:6px; margin-top:4px; font-size:11px; color:#888;">' +
+                            '<svg viewBox="0 0 24 24" style="width:12px; height:12px; fill:#888; margin-right:4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>' +
+                            '<span>小程序</span>' +
+                        '</div>' +
+                    '</div>';
+            } else if (type === 'voice') {
+                bubbleHtml = 
+                    '<div style="display:flex; align-items:center; width:120px; font-size:13px; color:#191919;">' +
+                        '<svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:#191919; margin-right:8px;"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>' +
+                        '<span>语音消息</span>' +
+                    '</div>';
+            } else if (type === 'video') {
+                bubbleHtml = 
+                    '<div style="width:200px; background:#000; border-radius:4px; overflow:hidden; position:relative; height:120px;">' +
+                        '<div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; z-index:2;">' +
+                            '<svg viewBox="0 0 24 24" style="width:36px; height:36px; fill:#fff;"><path d="M8 5v14l11-7z"/></svg>' +
+                        '</div>' +
+                        '<div style="position:absolute; bottom:6px; left:6px; color:#fff; font-size:12px; z-index:3; text-shadow:0 1px 2px rgba(0,0,0,0.8); width: calc(100% - 12px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (title || '视频消息') + '</div>' +
+                    '</div>';
+            } else if (type === 'music') {
+                var musicImg = image || defaultImg;
+                bubbleHtml = 
+                    '<style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>' +
+                    '<div style="width:200px;">' +
+                        '<div style="font-weight:bold; font-size:14px; line-height:1.3; color:#191919; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (title || '音乐消息') + '</div>' +
+                        '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
+                            '<div style="font-size:12px; color:#888; line-height:1.3; flex:1; padding-right:8px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;">' + (content || '音乐描述') + '</div>' +
+                            '<div style="width:40px; height:40px; position:relative; flex-shrink:0;">' +
+                                '<img style="width:40px; height:40px; object-fit:cover; border-radius:50%; animation: spin 4s linear infinite;" src="' + musicImg + '" alt="music cover">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+            } else if (type === 'transfer') {
+                bubbleHtml = 
+                    '<div style="display:flex; align-items:center; width:180px; font-size:12px; color:#07c160;">' +
+                        '<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#07c160; margin-right:6px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>' +
+                        '<span>已转接人工客服</span>' +
+                    '</div>';
+            } else {
+                bubbleHtml = '<span>' + (content || '').replace(/\n/g, '<br>') + '</span>';
+            }
+
+            var html = 
+                '<div style="padding:20px; background:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,sans-serif;">' +
+                    '<div style="text-align:center; color:#b2b2b2; font-size:12px; margin-bottom:15px;">' + timeStr + '</div>' +
+                    '<div style="display:flex; align-items:flex-start;">' +
+                        '<div style="width:40px; height:40px; border-radius:4px; background:#57be6a; color:#fff; text-align:center; line-height:40px; font-size:18px; font-weight:bold; flex-shrink:0;">KF</div>' +
+                        '<div style="margin-left:12px; position:relative; max-width:240px; padding:10px 12px; border-radius:4px; background:#fff; color:#191919; font-size:14px; line-height:1.4; word-break:break-all; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">' +
+                            '<div style="position:absolute; left:-10px; top:14px; width:0; height:0; border-style:solid; border-width:5px 5px 5px 5px; border-color:transparent #fff transparent transparent;"></div>' +
+                            bubbleHtml +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
+            layui.layer.open({
+                type: 1,
+                title: '客服回复预览',
+                area: ['340px', 'auto'],
+                shadeClose: true,
+                content: html
+            });
+        });
+    });
+</script>
+
+<script type="text/html" id="PreViewTpl">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" 
+       data-preview-reply="{{d.reply_type}}" 
+       data-preview-content="{{d.text_content || d.link_content || d.video_content || d.music_content || d.content || ''}}"
+       data-preview-image="{{d.image_image_url || d.link_image_url || d.page_image_url || d.voice_voice_url || d.video_video_url || d.music_image_url || d.image_url || ''}}"
+       data-preview-title="{{d.link_title || d.page_title || d.video_title || d.music_title || d.title || ''}}"
+       data-preview-pagepath="{{d.page_pagepath || d.music_hqurl || d.pagepath || ''}}"
+       data-preview-url="{{d.link_url || d.page_appid || d.music_url || d.url || ''}}">预览</a>
+</script>
+
+
+<script type="text/html" id="AppIdTpl">
+    {{# if (d.appid) { }}
+    <span class="pointer" data-copy="{{d.appid}}" data-tips-text="点击复制 AppID">
+        {{d.appid}} <span class="layui-icon layui-icon-file color-desc margin-left-5" style="font-size:12px"></span>
+    </span>
+    {{# } else { }}
+    <span class="color-desc">-</span>
+    {{# } }}
+</script>
+
+<script type="text/html" id="SortInputTpl">
+    <input type="number" min="0" data-blur-number="0" data-action-blur="{:url('sort')}" data-value="id#{{d.id}};sort#{value}" data-loading="false" value="{{d.sort}}" class="layui-input text-center">
+</script>
+
+<script type="text/html" id="StatusSwitchTpl">
+    <!--{if auth("state")}-->
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="已激活|已禁用" lay-filter="StatusSwitch" {{-d.status>0?'checked':''}}>
+    <!--{else}-->
+    {{-d.status ? '<b class="color-green">已激活</b>' : '<b class="color-red">已禁用</b>'}}
+    <!--{/if}-->
+</script>
+
+<script type="text/html" id="toolbar">
+    <!--{if auth("edit")}-->
+    <a class="layui-btn layui-btn-sm" data-width="1100px" data-modal="{:url('edit')}?id={{d.id}}" data-title="编辑客服回复规则">编 辑</a>
+    <!--{/if}-->
+    <!--{if auth("remove")}-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('remove')}" data-value="id#{{d.id}}" data-confirm="确定要删除该规则吗？">删 除</a>
+    <!--{/if}-->
+</script>
+{/block}
+

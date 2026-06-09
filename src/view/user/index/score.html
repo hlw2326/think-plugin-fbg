@@ -1,0 +1,49 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body">
+        <input type="hidden" name="id" value="{$vo.id}">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户昵称</label>
+            <div class="layui-input-block">
+                <input class="layui-input layui-bg-gray" readonly value="{$vo.nickname|default=''} (ID: {$vo.id})">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">当前积分</label>
+            <div class="layui-input-block">
+                <input class="layui-input layui-bg-gray" readonly value="{$vo.score|default='0'}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">调整类型</label>
+            <div class="layui-input-block">
+                <div class="layui-textarea help-checks">
+                    <label class="think-radio"><input name="action" type="radio" value="add" lay-ignore checked> 增加积分</label>
+                    <label class="think-radio"><input name="action" type="radio" value="sub" lay-ignore> 减少积分</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">调整数值</label>
+            <div class="layui-input-block">
+                <input type="number" name="value" required lay-verify="required|number" placeholder="请输入要调整的积分数值" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注说明</label>
+            <div class="layui-input-block">
+                <textarea name="remark" placeholder="请输入备注说明原因" class="layui-textarea"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="hr-line-solid"></div>
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">保存</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消</button>
+    </div>
+</form>

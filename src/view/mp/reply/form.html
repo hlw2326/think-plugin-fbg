@@ -1,0 +1,553 @@
+<style>
+    .base-reply-form {
+        display: flex;
+        width: 100%;
+        height: auto;
+        box-sizing: border-box;
+    }
+
+    .keys-container {
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .keys-container .layui-card {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding-bottom: 60px;
+        box-sizing: border-box;
+    }
+
+    .keys-container .layui-card .layui-card-body {
+        height: auto;
+        overflow: visible;
+    }
+
+    .keys-container .layui-card .layui-card-body img[data-tips-image] {
+        width: 112px;
+        height: auto;
+    }
+
+    .keys-container .layui-card .layui-card-body .layui-form-label {
+        width: 72px;
+        color: #6c6c6c;
+        font-weight: 700;
+    }
+
+    .keys-container .layui-card .layui-card-body .layui-form-label + .layui-input-block {
+        margin-left: 112px;
+    }
+
+    .base-customer-url {
+        margin-top: 6px;
+    }
+
+    /* WeChat Mock Preview Styles (Resetting ThinkAdmin overrides) */
+    .base-reply-form .mobile-preview {
+        flex: 0 0 320px;
+        width: 320px !important;
+        height: 570px !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        border-radius: 28px !important;
+        background: #f3f4f6 !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        position: relative !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .status-bar {
+        height: 38px !important;
+        padding: 10px 20px 0 20px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        color: #9ca3af !important;
+        font-size: 11px !important;
+        background: transparent !important;
+        z-index: 10 !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+    }
+
+    .base-reply-form .mobile-body {
+        top: 38px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        height: 532px !important;
+        padding: 16px !important;
+        overflow-y: auto !important;
+        box-sizing: border-box !important;
+        position: absolute !important;
+        background: #f3f4f6 !important;
+        border: none !important;
+        border-radius: 0 0 28px 28px !important;
+    }
+
+    .chat-msg {
+        display: flex;
+        align-items: flex-start;
+        margin-top: 10px;
+        opacity: 0;
+    }
+
+    .chat-msg-animated {
+        animation: bubble-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes bubble-appear {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .chat-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: #07c160;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .chat-avatar svg {
+        width: 20px;
+        height: 20px;
+        fill: #fff;
+    }
+
+    .chat-bubble {
+        margin-left: 12px;
+        position: relative;
+        max-width: 210px;
+        padding: 10px 14px;
+        border-radius: 2px 14px 14px 14px;
+        background: #fff;
+        color: #1f2937;
+        font-size: 14px;
+        line-height: 1.45;
+        word-break: break-all;
+        white-space: normal !important;
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .chat-bubble img {
+        max-width: 100%;
+        border-radius: 6px;
+        display: block;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="nowrap padding-20 base-reply-form">
+    <div class="mobile-preview inline-block">
+        <div class="status-bar">
+            <span>12:00</span>
+            <span style="font-weight: 500;">PREVIEW</span>
+            <div>
+                <i class="layui-icon layui-icon-wifi" style="font-size:12px"></i>
+            </div>
+        </div>
+        <div class="mobile-body">
+            <div class="chat-msg chat-msg-animated">
+                <div class="chat-avatar">
+                    <svg viewBox="0 0 24 24"><path d="M12 2c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>
+                </div>
+                <div class="chat-bubble">
+                    <span id="preview-text-content">欢迎咨询，请留下你的问题。</span>
+                    <img id="preview-image-content" src="" style="display:none" alt="img">
+                    <div id="preview-link-content" style="display:none; width:200px;">
+                        <div style="font-weight:bold; font-size:14px; line-height:1.3; color:#191919; margin-bottom:4px;" class="preview-link-title">图文链接标题</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div style="font-size:12px; color:#888; line-height:1.3; flex:1; padding-right:8px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;" class="preview-link-desc">图文链接描述</div>
+                            <img style="width:40px; height:40px; object-fit:cover; border-radius:4px; flex-shrink:0;" class="preview-link-img" src="" alt="thumb">
+                        </div>
+                    </div>
+                    <div id="preview-page-content" style="display:none; width:200px; background:#fff; border-radius:4px; overflow:hidden;">
+                        <div style="font-size:14px; color:#191919; margin-bottom:8px; line-height:1.3;" class="preview-page-title">小程序卡片标题</div>
+                        <img style="width:100%; height:120px; object-fit:cover; border-radius:4px; margin-bottom:6px;" class="preview-page-img" src="" alt="cover">
+                        <div style="display:flex; align-items:center; border-top:1px solid #eee; padding-top:6px; margin-top:4px; font-size:11px; color:#888;">
+                            <svg viewBox="0 0 24 24" style="width:12px; height:12px; fill:#888; margin-right:4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            <span>小程序</span>
+                        </div>
+                    </div>
+                    <div id="preview-voice-content" style="display:none; display:flex; align-items:center; width:120px; font-size:13px; color:#191919;">
+                        <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:#191919; margin-right:8px;"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                        <span>语音消息</span>
+                    </div>
+                    <div id="preview-video-content" style="display:none; width:200px; background:#000; border-radius:4px; overflow:hidden; position:relative; height:120px;">
+                        <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; z-index:2;">
+                            <svg viewBox="0 0 24 24" style="width:36px; height:36px; fill:#fff;"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <div style="position:absolute; bottom:6px; left:6px; color:#fff; font-size:12px; z-index:3; text-shadow:0 1px 2px rgba(0,0,0,0.8); width: calc(100% - 12px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" class="preview-video-title">视频标题</div>
+                    </div>
+                    <div id="preview-music-content" style="display:none; width:200px;">
+                        <div style="font-weight:bold; font-size:14px; line-height:1.3; color:#191919; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" class="preview-music-title">音乐标题</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div style="font-size:12px; color:#888; line-height:1.3; flex:1; padding-right:8px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;" class="preview-music-desc">音乐描述</div>
+                            <div style="width:40px; height:40px; position:relative; flex-shrink:0;">
+                                <img style="width:40px; height:40px; object-fit:cover; border-radius:50%; animation: spin 4s linear infinite;" class="preview-music-img" src="" alt="music cover">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="preview-transfer-content" style="display:none; color:#07c160; display:flex; align-items:center; width:180px; font-size:12px;">
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#07c160; margin-right:6px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        <span>转接人工客服...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="keys-container">
+        <form action="{:sysuri()}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="RuleTable">
+            <div class="layui-card relative shadow-none">
+                <div class="layui-card-header layui-bg-gray text-center">编辑客服回复规则</div>
+                <div class="layui-card-body">
+                    <div class="layui-form-item margin-top-10">
+                        <label class="layui-form-label">小程序</label>
+                        <div class="layui-input-block">
+                            <select name="appid" lay-filter="ReplyAppid">
+                                <option value="" {if !isset($vo.appid) or $vo.appid eq ''}selected{/if}>通用回复（所有小程序）</option>
+                                {foreach name='mps' item='mp'}
+                                <option value="{$mp.appid}" {if isset($vo.appid) and $vo.appid eq $mp.appid}selected{/if}>{$mp.name|default='未命名'} - {$mp.appid}</option>
+                                {/foreach}
+                            </select>
+                            <div class="relative base-customer-url" data-template="{$customerUrl|default=''}">
+                                <input class="layui-input layui-bg-gray padding-right-30" readonly data-customer-url placeholder="消息回调地址">
+                                <a data-copy="" data-tips-text="复制回调地址" class="input-right-icon layui-icon layui-icon-release"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label label-required">匹配方式</label>
+                        <div class="layui-input-block">
+                            <div class="layui-input help-checks">
+                                {foreach name='matchTypes' key='k' item='v'}
+                                <label class="think-radio">
+                                    <!--{if (!isset($vo.match_type) and $k eq 'exact') or (isset($vo.match_type) and $vo.match_type eq $k)}-->
+                                    <input type="radio" checked name="match_type" value="{$k}" lay-ignore> {$v}
+                                    <!--{else}-->
+                                    <input type="radio" name="match_type" value="{$k}" lay-ignore> {$v}
+                                    <!--{/if}-->
+                                </label>
+                                {/foreach}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" data-match-keyword>
+                        <label class="layui-form-label">匹配内容</label>
+                        <div class="layui-input-block">
+                            <input placeholder="请输入用户发送的关键词" maxlength="120" name="keyword" class="layui-input" value="{$vo.keyword|default=''}">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label label-required">回复类型</label>
+                        <div class="layui-input-block">
+                            <div class="layui-textarea help-checks">
+                                {foreach name='types' key='k' item='v'}
+                                <label class="think-radio">
+                                    <!--{if (!isset($vo.reply_type) and $k eq 'text') or (isset($vo.reply_type) and $vo.reply_type eq $k)}-->
+                                    <input name="reply_type" checked type="radio" value="{$k}" lay-ignore> {$v}
+                                    <!--{else}-->
+                                    <input name="reply_type" type="radio" value="{$k}" lay-ignore> {$v}
+                                    <!--{/if}-->
+                                </label>
+                                {/foreach}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" data-keys-type="text">
+                        <label class="layui-form-label">回复文字</label>
+                        <div class="layui-input-block">
+                            <textarea name="text_content" placeholder="请输入客服自动回复文字" maxlength="10000" class="layui-textarea">{$vo.text_content|raw|default='欢迎咨询，请留下你的问题。'}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" data-keys-type="image">
+                        <label class="layui-form-label label-required">回复图片</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover onchange="$(this).nextAll('img').attr('src', this.value || '{$defaultImage}'); window.updatePreview && window.updatePreview(true);" value="{$vo.image_image_url|default=''}" name="image_image_url" placeholder="请从图片空间选择回复图片">
+                            <a data-file="image" data-type="png,jpg,jpeg,gif" data-field="image_image_url" class="input-right-icon layui-icon layui-icon-upload-drag"></a>
+                            <p class="help-block">请从图片空间选择客服回复图片，支持 png/jpg/jpeg/gif 格式。</p>
+                            <img data-tips-image src="{$vo.image_image_url|default=$defaultImage}" alt="img">
+                        </div>
+                    </div>
+
+                    <div data-keys-type="link" class="layui-hide">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">图文标题</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入图文链接标题" maxlength="120" name="link_title" class="layui-input" value="{$vo.link_title|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">图文描述</label>
+                            <div class="layui-input-block">
+                                <textarea name="link_content" placeholder="请输入图文链接描述" maxlength="1000" class="layui-textarea">{$vo.link_content|raw|default=''}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">跳转链接</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入图文跳转链接" name="link_url" class="layui-input" value="{$vo.link_url|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">缩略图片</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover onchange="$(this).nextAll('img').attr('src', this.value || '{$defaultImage}'); window.updatePreview && window.updatePreview(true);" value="{$vo.link_image_url|default=''}" name="link_image_url" placeholder="请选择缩略图片">
+                                <a data-file="image" data-type="png,jpg,jpeg,gif" data-field="link_image_url" class="input-right-icon layui-icon layui-icon-upload-drag"></a>
+                                <p class="help-block">请选择图文链接缩略图，支持 png/jpg/jpeg/gif 格式。</p>
+                                <img data-tips-image src="{$vo.link_image_url|default=$defaultImage}" alt="img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-keys-type="miniprogrampage" class="layui-hide">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">目标 AppID</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入目标小程序 AppID（留空默认跳转当前小程序）" name="page_appid" class="layui-input" value="{$vo.page_appid|default=''}">
+                                <p class="help-block color-red"><i class="layui-icon layui-icon-tips" style="font-size:12px; margin-right:4px;"></i>注意：目标小程序必须与当前小程序在微信后台已进行“关联绑定”，否则用户点击卡片将提示无法跳转。</p>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">卡片标题</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入小程序卡片标题" maxlength="120" name="page_title" class="layui-input" value="{$vo.page_title|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">页面路径</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入小程序卡片页面路径，例如 pages/index/index" name="page_pagepath" class="layui-input" value="{$vo.page_pagepath|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">封面图片</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover onchange="$(this).nextAll('img').attr('src', this.value || '{$defaultImage}'); window.updatePreview && window.updatePreview(true);" value="{$vo.page_image_url|default=''}" name="page_image_url" placeholder="请选择卡片封面图片">
+                                <a data-file="image" data-type="png,jpg,jpeg,gif" data-field="page_image_url" class="input-right-icon layui-icon layui-icon-upload-drag"></a>
+                                <p class="help-block">请从图片空间选择小程序卡片封面图片，支持 png/jpg/jpeg/gif 格式。</p>
+                                <img data-tips-image src="{$vo.page_image_url|default=$defaultImage}" alt="img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-keys-type="voice" class="layui-hide">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">语音文件</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input layui-bg-gray" readonly value="{$vo.voice_voice_url|default=''}" name="voice_voice_url" placeholder="请选择语音文件或上传">
+                                <a data-file="video" data-type="mp3,amr,wma,wav" data-field="voice_voice_url" class="input-right-icon layui-icon layui-icon-upload-drag"></a>
+                                <p class="help-block">请从文件空间选择或上传语音，支持 mp3/amr/wma/wav 格式。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-keys-type="video" class="layui-hide">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">视频标题</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入视频标题" name="video_title" class="layui-input" value="{$vo.video_title|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">视频描述</label>
+                            <div class="layui-input-block">
+                                <textarea name="video_content" placeholder="请输入视频描述" maxlength="1000" class="layui-textarea">{$vo.video_content|raw|default=''}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">视频文件</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input layui-bg-gray" readonly value="{$vo.video_video_url|default=''}" name="video_video_url" placeholder="请选择视频文件或上传">
+                                <a data-file="video" data-type="mp4" data-field="video_video_url" class="input-right-icon layui-icon layui-icon-upload-drag"></a>
+                                <p class="help-block">请选择或上传视频，支持 mp4 格式。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-keys-type="music" class="layui-hide">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">音乐标题</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入音乐标题" name="music_title" class="layui-input" value="{$vo.music_title|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">音乐描述</label>
+                            <div class="layui-input-block">
+                                <textarea name="music_content" placeholder="请输入音乐描述" maxlength="1000" class="layui-textarea">{$vo.music_content|raw|default=''}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required">音乐链接</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入音乐跳转链接" name="music_url" class="layui-input" value="{$vo.music_url|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">高质链接</label>
+                            <div class="layui-input-block">
+                                <input placeholder="请输入高质量音乐链接（可选）" name="music_hqurl" class="layui-input" value="{$vo.music_hqurl|default=''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">音乐封面</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input layui-bg-gray" readonly data-tips-image data-tips-hover onchange="$(this).nextAll('img').attr('src', this.value || '{$defaultImage}'); window.updatePreview && window.updatePreview(true);" value="{$vo.music_image_url|default=''}" name="music_image_url" placeholder="请选择音乐封面图片">
+                                <a data-file="image" data-type="png,jpg,jpeg,gif" data-field="music_image_url" class="input-right-icon layui-icon layui-icon-upload-drag"></a>
+                                <p class="help-block">请选择音乐封面图片，支持 png/jpg/jpeg/gif 格式。</p>
+                                <img data-tips-image src="{$vo.music_image_url|default=$defaultImage}" alt="img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-keys-type="transfer" class="layui-hide">
+                        <div style="padding: 30px 20px; text-align: center; color: #666; background: #fafafa; border-radius: 8px; border: 1px dashed #e2e2e2; margin: 10px 0; white-space: normal;">
+                            <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: #07c160; margin-bottom: 12px; display: inline-block;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                            <p style="font-size: 15px; font-weight: bold; color: #333; margin-bottom: 6px;">转人工客服模式</p>
+                            <p style="font-size: 12px; line-height: 1.6; max-width: 320px; margin: 0 auto; color: #888;">匹配到此规则时，系统将不再自动异步发送客服消息，而是会向微信服务器同步返回转接指令，将当前的会话无缝流转至您的微信人工客服坐席系统（客服网页版/客服小助手）。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center absolute full-width" style="bottom:0">
+                <div class="hr-line-dashed margin-bottom-10"></div>
+                {notempty name='vo.id'}<input type="hidden" value="{$vo.id}" name="id">{/notempty}
+                <button class="layui-btn menu-submit">保存数据</button>
+                <button data-close data-confirm="确定要取消编辑吗？" class="layui-btn layui-btn-danger" type="button">取消编辑</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        function syncCustomerUrl(appid) {
+            var $form = $('.base-reply-form form');
+            appid = appid === undefined ? $form.find('[name="appid"]').val() : appid;
+            var $box = $form.find('.base-customer-url');
+            var $target = $box.find('[data-customer-url]');
+            var $copy = $box.find('[data-copy]');
+            var template = $box.data('template') || '';
+            var url = appid ? template.replace('小程序AppID', appid) : template;
+            $target.val(url);
+            $copy.attr('data-copy', url);
+        }
+
+        function updatePreview(triggerAnimation) {
+            var replyType = $('input[name="reply_type"]:checked').val();
+            var $textSpan = $('#preview-text-content');
+            var $img = $('#preview-image-content');
+            var $link = $('#preview-link-content');
+            var $page = $('#preview-page-content');
+            var $voice = $('#preview-voice-content');
+            var $video = $('#preview-video-content');
+            var $music = $('#preview-music-content');
+            var $transfer = $('#preview-transfer-content');
+            var $msg = $('.chat-msg');
+            window.updatePreview = updatePreview;
+
+            if (triggerAnimation) {
+                // Trigger reflow to restart slide animation
+                $msg.removeClass('chat-msg-animated');
+                if ($msg.length > 0) {
+                    void $msg[0].offsetWidth; 
+                }
+                $msg.addClass('chat-msg-animated');
+            }
+            
+            $textSpan.hide();
+            $img.hide();
+            $link.hide();
+            $page.hide();
+            $voice.hide();
+            $video.hide();
+            $music.hide();
+            $transfer.hide();
+
+            if (replyType === 'text') {
+                $textSpan.show().html(($('[name="text_content"]').val() || '').replace(/\n/g, '<br>'));
+            } else if (replyType === 'image') {
+                var imgUrl = $('[name="image_image_url"]').val() || '{$defaultImage}';
+                $img.show().attr('src', imgUrl);
+            } else if (replyType === 'link') {
+                $link.show();
+                $link.find('.preview-link-title').text($('[name="link_title"]').val() || '图文链接标题');
+                $link.find('.preview-link-desc').html(($('[name="link_content"]').val() || '图文链接描述').replace(/\n/g, '<br>'));
+                $link.find('.preview-link-img').attr('src', $('[name="link_image_url"]').val() || '{$defaultImage}');
+            } else if (replyType === 'miniprogrampage') {
+                $page.show();
+                $page.find('.preview-page-title').text($('[name="page_title"]').val() || '小程序卡片标题');
+                $page.find('.preview-page-img').attr('src', $('[name="page_image_url"]').val() || '{$defaultImage}');
+            } else if (replyType === 'voice') {
+                $voice.show();
+            } else if (replyType === 'video') {
+                $video.show();
+                $video.find('.preview-video-title').text($('[name="video_title"]').val() || '视频标题');
+            } else if (replyType === 'music') {
+                $music.show();
+                $music.find('.preview-music-title').text($('[name="music_title"]').val() || '音乐标题');
+                $music.find('.preview-music-desc').text($('[name="music_content"]').val() || '音乐描述');
+                $music.find('.preview-music-img').attr('src', $('[name="music_image_url"]').val() || '{$defaultImage}');
+            } else if (replyType === 'transfer') {
+                $transfer.show();
+            }
+        }
+
+        layui.form.on('select(ReplyAppid)', function (data) {
+            syncCustomerUrl(data.value);
+        });
+        $('body').off('change', '.base-reply-form [name="appid"]').on('change', '.base-reply-form [name="appid"]', function () {
+            syncCustomerUrl(this.value);
+        });
+
+        $('body').off('input change', '[name="text_content"], [name="link_title"], [name="link_content"], [name="link_url"], [name="page_title"], [name="page_pagepath"], [name="page_appid"], [name="video_title"], [name="video_content"], [name="music_title"], [name="music_content"], [name="music_url"], [name="music_hqurl"]')
+            .on('input change', '[name="text_content"], [name="link_title"], [name="link_content"], [name="link_url"], [name="page_title"], [name="page_pagepath"], [name="page_appid"], [name="video_title"], [name="video_content"], [name="music_title"], [name="music_content"], [name="music_url"], [name="music_hqurl"]', function () {
+                updatePreview(false);
+            });
+
+        $('body').off('change', '[name="image_image_url"], [name="link_image_url"], [name="page_image_url"], [name="voice_voice_url"], [name="video_video_url"], [name="music_image_url"]')
+            .on('change', '[name="image_image_url"], [name="link_image_url"], [name="page_image_url"], [name="voice_voice_url"], [name="video_video_url"], [name="music_image_url"]', function () {
+                updatePreview(true);
+            });
+
+        $('body').off('click', 'input[name=reply_type]').on('click', 'input[name=reply_type]', function () {
+            var value = $(this).val(), $form = $(this).parents('form');
+            var $current = $form.find('[data-keys-type="' + value + '"]').removeClass('layui-hide');
+            $form.find('[data-keys-type]').not($current).addClass('layui-hide');
+            updatePreview(true);
+        });
+
+        $('body').off('click', 'input[name=match_type]').on('click', 'input[name=match_type]', function () {
+            var val = $(this).val();
+            $('[data-match-keyword]').toggleClass('layui-hide', val === 'default' || val === 'enter');
+        });
+
+        $('input[name=reply_type]:checked').trigger('click');
+        $('input[name=match_type]:checked').trigger('click');
+        syncCustomerUrl();
+        updatePreview(true);
+    });
+</script>

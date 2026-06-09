@@ -1,0 +1,111 @@
+<form action="{:sysuri()}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="ResTable">
+    <div class="layui-card-body padding-left-40">
+
+        <div class="layui-form-item relative block">
+            <span class="color-green font-w7">所属分类</span>
+            <select class="layui-select" name="cate_id" required vali-name="分类">
+                <option value="">-- 请选择分类 --</option>
+                {foreach $cates as $cate}
+                <option value="{$cate.id}" {eq name='$vo.cate_id|default=""' value='$cate.id'}selected{/eq}>{$cate.name} ({$cate.code})</option>
+                {/foreach}
+            </select>
+            <p class="help-block"><b>必填</b>，请选择当前资源归属的分组类目</p>
+        </div>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">资源标题</span>
+            <input name="title" value="{$vo.title|default=''}" required vali-name="标题" placeholder="请输入资源标题" class="layui-input">
+            <p class="help-block"><b>必填</b>，用于展示的资源标题</p>
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">资源链接</span>
+            <div class="relative block">
+                <input class="layui-input layui-bg-gray" readonly data-tips-hover placeholder="请上传或选择资源文件" value="{$vo.url|default=''}" name="url" required vali-name="资源链接">
+                <a class="input-right-icon layui-icon layui-icon-upload-drag" data-file="gif,jpg,png,jpeg,mp4" data-type="gif,jpg,png,jpeg,mp4" data-field="url"></a>
+            </div>
+            <p class="help-block"><b>必填</b>，可上传动图(GIF)、图片、或短视频</p>
+        </label>
+
+        <div class="layui-form-item relative block">
+            <span class="color-green font-w7">资源类型</span>
+            <div class="layui-textarea help-checks">
+                <label class="think-radio"><input name="ext" type="radio" value="image" lay-ignore {eq name='$vo.ext|default="image"' value='image'}checked{/eq}> 图片/GIF</label>
+                <label class="think-radio"><input name="ext" type="radio" value="video" lay-ignore {eq name='$vo.ext|default="image"' value='video'}checked{/eq}> 视频</label>
+            </div>
+            <p class="help-block"><b>必填</b>，上传资源的媒体类型 (选择或上传资源后会自动识别)</p>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">分辨率</span>
+                    <input name="resolution" value="{$vo.resolution|default='1080x1920'}" placeholder="如: 1080x1920" class="layui-input">
+                    <p class="help-block"><b>可选</b>，资源的分辨率规格 (默认: 1080x1920)</p>
+                </label>
+            </div>
+            <div class="layui-col-xs6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">文件大小</span>
+                    <input name="size" value="{$vo.size|default='0.0MB'}" placeholder="如: 1.5MB" class="layui-input">
+                    <p class="help-block"><b>可选</b>，资源文件占用的大小描述 (默认: 0.0MB)</p>
+                </label>
+            </div>
+        </div>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">检索标签</span>
+            <input name="tags" value="{$vo.tags|default=''}" placeholder="如: 唯美,治愈,星空 (逗号分隔)" class="layui-input">
+            <p class="help-block"><b>可选</b>，多个标签以英文逗号分隔，方便前端检索匹配</p>
+        </label>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs6">
+                <div class="layui-form-item relative block">
+                    <span class="color-green font-w7">是否独立扣积分</span>
+                    <div class="layui-textarea help-checks">
+                        <label class="think-radio"><input name="is_indep_score" type="radio" value="0" lay-ignore {eq name='$vo.is_indep_score|default="0"' value='0'}checked{/eq}> 否</label>
+                        <label class="think-radio"><input name="is_indep_score" type="radio" value="1" lay-ignore {eq name='$vo.is_indep_score|default="0"' value='1'}checked{/eq}> 是</label>
+                    </div>
+                    <p class="help-block"><b>必选</b>，独立设置下载扣除的分数</p>
+                </div>
+            </div>
+            <div class="layui-col-xs6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">独立积分值</span>
+                    <input name="indep_score" type="number" min="0" value="{$vo.indep_score|default='0'}" placeholder="独立扣除的积分数" class="layui-input">
+                    <p class="help-block"><b>可选</b>，当启用独立扣积分时生效</p>
+                </label>
+            </div>
+        </div>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">排序权重</span>
+            <input name="sort" type="number" min="0" value="{$vo.sort|default='0'}" placeholder="请输入排序权重" class="layui-input">
+            <p class="help-block"><b>可选</b>，权重越大的资源在列表中越靠前展示 (默认: 0)</p>
+        </label>
+
+    </div>
+    <div class="hr-line-dashed"></div>
+    {notempty name='vo.id'}<input type="hidden" value="{$vo.id}" name="id">{/notempty}
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">保存数据</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>
+
+<script>
+    $(function() {
+        $('input[name="url"]').on('change', function() {
+            var url = $(this).val();
+            if (url) {
+                var suffix = url.substring(url.lastIndexOf('.')).toLowerCase();
+                if (suffix === '.mp4' || suffix === '.m3u8' || suffix === '.webm' || suffix === '.mov') {
+                    $('input[name="ext"][value="video"]').prop('checked', true);
+                } else {
+                    $('input[name="ext"][value="image"]').prop('checked', true);
+                }
+            }
+        });
+    });
+</script>

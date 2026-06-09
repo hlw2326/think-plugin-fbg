@@ -1,0 +1,20 @@
+<form action="{:sysuri('import')}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="AppTable">
+    <div class="layui-card-body padding-left-40">
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">JSON 数据</span>
+            <textarea name="json_data" required vali-name="JSON数据" placeholder='例如：
+{
+    "name": "小程序名称",
+    "appid": "wx1234567890abcdef",
+    "appsecret": "abcdef1234567890abcdef1234567890",
+    ...
+}' class="layui-textarea" style="height: 300px; font-family: monospace; font-size: 13px; line-height: 1.5;"></textarea>
+            <p class="help-block"><b>必填</b>，请将从小程序列表复制的 JSON 配置数据粘贴至上方（支持单条对象或多条对象组成的数组）</p>
+        </label>
+    </div>
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">开始导入</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>

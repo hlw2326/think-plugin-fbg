@@ -1,0 +1,121 @@
+<form action="{:sysuri()}" method="post" data-auto="true" class="layui-form layui-card" data-table-id="AppTable">
+    <div class="layui-card-body padding-left-40">
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">小程序名称</span>
+                    <input name="name" value="{$vo.name|default=''}" required vali-name="名称" placeholder="请输入小程序名称" class="layui-input">
+                    <p class="help-block"><b>必填</b>，请填写微信小程序的应用展示名称</p>
+                </label>
+            </div>
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">小程序 Logo</span>
+                    <div class="relative block">
+                        <input class="layui-input" data-tips-image data-tips-hover placeholder="请上传小程序 Logo" value="{$vo.logo|default=''}" name="logo">
+                        <a class="input-right-icon layui-icon layui-icon-upload-drag" data-file="btn" data-type="png,jpg,jpeg" data-field="logo"></a>
+                    </div>
+                    <p class="help-block"><b>可选</b>，请上传小程序 Logo 图片</p>
+                </label>
+            </div>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">AppID</span>
+                    <input name="appid" value="{$vo.appid|default=''}" required vali-name="AppID" placeholder="请输入 AppID" class="layui-input">
+                    <p class="help-block"><b>必填</b>，请填写微信小程序 AppID</p>
+                </label>
+            </div>
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">AppSecret</span>
+                    <input name="appsecret" value="{$vo.appsecret|default=''}" required vali-name="AppSecret" placeholder="请输入 AppSecret" class="layui-input" type="password" lay-affix="eye">
+                    <p class="help-block"><b>必填</b>，请填写微信小程序 AppSecret 密钥</p>
+                </label>
+            </div>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">消息校验 Token</span>
+                    <input name="token" value="{$vo.token|default=''}" placeholder="请输入 Token" class="layui-input">
+                    <p class="help-block"><b>可选</b>，用于小程序客服等消息推送校验的 Token</p>
+                </label>
+            </div>
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">消息加密密钥</span>
+                    <input name="encodingaeskey" value="{$vo.encodingaeskey|default=''}" placeholder="请输入 EncodingAESKey" class="layui-input">
+                    <p class="help-block"><b>可选</b>，消息加密密钥 EncodingAESKey (43位)</p>
+                </label>
+            </div>
+        </div>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">客服回调地址</span>
+            <div class="relative block base-customer-url" data-template="{$customerUrl|default=''}">
+                <input class="layui-input layui-bg-gray padding-right-30" readonly data-customer-url placeholder="保存 AppID 后自动生成">
+                <a data-copy="" data-tips-text="复制回调地址" class="input-right-icon layui-icon layui-icon-release"></a>
+            </div>
+            <p class="help-block"><b>只读</b>，用于在微信小程序后台配置消息推送服务器地址 ( 必须以 https 开头 )</p>
+        </label>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">客服消息开关</span>
+                    <select name="custom_reply_enabled" class="layui-select">
+                        <option value="1" {if !isset($vo.custom_reply_enabled) || $vo.custom_reply_enabled==1}selected{/if}>开启</option>
+                        <option value="0" {if isset($vo.custom_reply_enabled) && $vo.custom_reply_enabled==0}selected{/if}>关闭</option>
+                    </select>
+                    <p class="help-block"><b>必选</b>，开启后系统会自动响应小程序用户的客服消息</p>
+                </label>
+            </div>
+            <div class="layui-col-md6">
+                <label class="layui-form-item relative block">
+                    <span class="color-green font-w7">VIP 去广告</span>
+                    <select name="vip_no_ad" class="layui-select">
+                        <option value="0" {if empty($vo.vip_no_ad)}selected{/if}>关闭</option>
+                        <option value="1" {if !empty($vo.vip_no_ad)}selected{/if}>开启</option>
+                    </select>
+                    <p class="help-block"><b>必选</b>，开启后会对带有 VIP 身份的用户屏蔽小程序内展示广告</p>
+                </label>
+            </div>
+        </div>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">备注说明</span>
+            <textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$vo.remark|default=''}</textarea>
+            <p class="help-block"><b>可选</b>，此小程序的内部备注说明</p>
+        </label>
+
+    </div>
+    <div class="hr-line-dashed"></div>
+    {notempty name='vo.id'}<input type="hidden" value="{$vo.id}" name="id">{/notempty}
+    <div class="layui-form-item text-center">
+        <button class="layui-btn" type="submit">保存数据</button>
+        <button class="layui-btn layui-btn-danger" type="button" data-close>取消操作</button>
+    </div>
+</form>
+
+<script>
+    $(function () {
+        function syncCustomerUrl() {
+            var $form = $('[data-table-id="AppTable"]');
+            var appid = $form.find('[name="appid"]').val() || '小程序AppID';
+            var $box = $form.find('.base-customer-url');
+            var template = $box.data('template') || '';
+            var url = template.replace('小程序AppID', appid);
+            $box.find('[data-customer-url]').val(url);
+            $box.find('[data-copy]').attr('data-copy', url);
+        }
+
+        $('body').off('input change', '[data-table-id="AppTable"] [name="appid"]').on('input change', '[data-table-id="AppTable"] [name="appid"]', syncCustomerUrl);
+        syncCustomerUrl();
+    });
+</script>
+

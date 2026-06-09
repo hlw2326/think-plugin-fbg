@@ -1,0 +1,264 @@
+{extend name="main"}
+
+{block name='content'}
+<style>
+    .portal-block-container .portal-block-item {
+        line-height: 2em;
+        padding: 10px 20px;
+    }
+
+    .portal-block-container .portal-block-item>div:nth-child(2) {
+        font-size: 30px;
+    }
+
+    .portal-block-container .portal-block-icon {
+        font-size: 45px;
+    }
+</style>
+<div class="think-box-shadow portal-block-container notselect">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-125deg,#57bdbf,#2f9de2)">
+                <div>用户总数</div>
+                <div>{$user_count|default='0'}</div>
+                <div>系统注册用户总数量</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-user"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-113deg,#c543d8,#925cc3)">
+                <div>今日注册数</div>
+                <div>{$day_user_count|default='0'}</div>
+                <div>今天注册新增用户数量</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-add-1"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-125deg,#ff7d7d,#fb2c95)">
+                <div>工具总数</div>
+                <div>{$tools_count|default='0'}</div>
+                <div>系统配置的小程序工具数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-app"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-141deg,#ecca1b,#f39526)">
+                <div>工具点击总数</div>
+                <div>{$tools_click_count|default='0'}</div>
+                <div>所有工具的累计点击次数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-fire"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background: linear-gradient(-141deg, #ec407a, #ab47bc);">
+                <div>客服规则数</div>
+                <div>{$reply_count|default='0'}</div>
+                <div>系统客服消息自动回复规则数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-dialogue"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background: linear-gradient(-141deg, #8bc34a, #00bcd4);">
+                <div>帮助文档数</div>
+                <div>{$help_count|default='0'}</div>
+                <div>系统已发布的使用帮助文档数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-help"></i>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15 margin-top-15">
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-125deg,#57bdbf,#2f9de2)">
+                <div>资源总数</div>
+                <div>{$res_count|default='0'}</div>
+                <div>系统已发布背景资源数量</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-picture"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-113deg,#c543d8,#925cc3)">
+                <div>累计下载</div>
+                <div>{$down_count|default='0'}</div>
+                <div>所有资源下载/保存的总次数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-download-circle"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-125deg,#ff7d7d,#fb2c95)">
+                <div>累计浏览</div>
+                <div>{$view_count|default='0'}</div>
+                <div>所有资源累计浏览的总次数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-read"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background:linear-gradient(-141deg,#ecca1b,#f39526)">
+                <div>累计点赞</div>
+                <div>{$like_count|default='0'}</div>
+                <div>所有资源累计被点赞的次数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-praise"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background: linear-gradient(-141deg, #ec407a, #ab47bc);">
+                <div>累计收藏</div>
+                <div>{$collect_count|default='0'}</div>
+                <div>所有资源当前被收藏的总数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-star"></i>
+        </div>
+        <div class="layui-col-sm2 layui-col-xs6">
+            <div class="portal-block-item nowrap" style="background: linear-gradient(-141deg, #8bc34a, #00bcd4);">
+                <div>VIP 会员数</div>
+                <div>{$vip_count|default='0'}</div>
+                <div>当前有效的 VIP 会员用户数</div>
+            </div>
+            <i class="portal-block-icon layui-icon layui-icon-diamond"></i>
+        </div>
+    </div>
+</div>
+
+<div class="layui-row layui-col-space15 margin-top-10">
+    <div class="layui-col-xs12 layui-col-md4">
+        <div class="think-box-shadow">
+            <div id="main1" style="width:100%;height:350px"></div>
+        </div>
+    </div>
+    <div class="layui-col-xs12 layui-col-md4">
+        <div class="think-box-shadow">
+            <div id="main2" style="width:100%;height:350px"></div>
+        </div>
+    </div>
+    <div class="layui-col-xs12 layui-col-md4">
+        <div class="think-box-shadow">
+            <div id="main3" style="width:100%;height:350px"></div>
+        </div>
+    </div>
+</div>
+
+<label class="layui-hide">
+    <textarea id="jsondata1">{$days|json_encode}</textarea>
+    <textarea id="jsondata2">{$tools_list|json_encode}</textarea>
+    <textarea id="jsondata3">{$cate_stats|json_encode}</textarea>
+</label>
+
+<script>
+    require(['echarts'], function (echarts) {
+        // 图表 1: 近半月新增用户趋势
+        var data1 = JSON.parse($('#jsondata1').html());
+        var days = data1.map(function (item) {
+            return item['当天日期'];
+        });
+
+        (function (charts) {
+            window.addEventListener("resize", function () {
+                charts.resize()
+            });
+            charts.setOption({
+                title: [{left: 'center', text: '近半月新增用户趋势'}],
+                tooltip: {trigger: 'axis', show: true, axisPointer: {type: 'cross', label: {}}},
+                xAxis: [{data: days, gridIndex: 0}],
+                yAxis: [
+                    {
+                        splitLine: {show: true}, gridIndex: 0, type: 'value', axisLabel: {
+                            formatter: '{value} 人'
+                        }
+                    }
+                ],
+                grid: [{left: '10%', right: '5%', top: '20%', bottom: '15%'}],
+                series: [
+                    {
+                        smooth: true, showBackground: true,
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: 'rgba(47, 157, 226, 0.4)'},
+                                {offset: 1, color: 'rgba(47, 157, 226, 0.0)'}
+                            ])
+                        },
+                        type: 'line', showSymbol: true, xAxisIndex: 0, yAxisIndex: 0,
+                        itemStyle: {color: '#2f9de2'},
+                        label: {normal: {position: 'top', formatter: '{c} 人', show: true}},
+                        data: data1.map(function (item) {
+                            return item['新增用户'];
+                        }),
+                    }
+                ]
+            });
+        })(echarts.init(document.getElementById('main1')));
+
+        // 图表 2: 工具点击排行排行图
+        var data2 = JSON.parse($('#jsondata2').html());
+        var toolNames = data2.map(function (item) {
+            return item['title'];
+        });
+        var clickCounts = data2.map(function (item) {
+            return item['click_count'];
+        });
+
+        (function (charts) {
+            window.addEventListener("resize", function () {
+                charts.resize()
+            });
+            charts.setOption({
+                title: [{left: 'center', text: '工具点击量排行分布'}],
+                tooltip: {trigger: 'axis', show: true, axisPointer: {type: 'shadow'}},
+                xAxis: [{type: 'category', data: toolNames, axisTick: {alignWithLabel: true}}],
+                yAxis: [
+                    {
+                        splitLine: {show: true}, type: 'value', axisLabel: {
+                            formatter: '{value} 次'
+                        }
+                    }
+                ],
+                grid: [{left: '10%', right: '5%', top: '20%', bottom: '15%'}],
+                series: [
+                    {
+                        name: '点击次数',
+                        type: 'bar',
+                        barWidth: '40%',
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: '#ff7d7d'},
+                                {offset: 1, color: '#fb2c95'}
+                            ])
+                        },
+                        label: {normal: {position: 'top', formatter: '{c} 次', show: true}},
+                        data: clickCounts
+                    }
+                ]
+            });
+        })(echarts.init(document.getElementById('main2')));
+
+        // 图表 3: 资源分类分布图 (饼图)
+        var data3 = JSON.parse($('#jsondata3').html());
+        (function (charts) {
+            window.addEventListener("resize", function () {
+                charts.resize()
+            });
+            charts.setOption({
+                title: [{left: 'center', text: '资源分类占比分布'}],
+                tooltip: {trigger: 'item', formatter: '{b} : {c} 个 ({d}%)'},
+                grid: [{left: '10%', right: '5%', top: '20%', bottom: '15%'}],
+                series: [
+                    {
+                        name: '资源分类',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '55%'],
+                        roseType: 'radius',
+                        data: data3,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            });
+        })(echarts.init(document.getElementById('main3')));
+
+    });
+</script>
+{/block}
